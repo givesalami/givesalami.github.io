@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eid Card Generator</title><script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <img src="sticker.png" alt="Eid Mubarak Sticker" class="sticker">
+        <h1>Eid Card Generator</h1>
+        <div class="form-container">
+            <form id="eidForm">
+                <input type="text" id="name" placeholder="Your Name" required>
+                <input type="number" id="bkash" placeholder="Your Bkash Number" required>
+                <input type="text" id="receiver" placeholder="Person you want to send" required>
+                <button type="button" onclick="generateLink()">Generate Link</button>
+            </form>
+        </div>
+        <div id="generatedLink" class="link-container"></div>
+    </div>
+ <footer class="copyright">
+        &copy; 2025 <a href="http://facebook.com/raffsun.zany" target="_blank"> Raffsun Zany</a>. All rights reserved.
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
