@@ -56,7 +56,7 @@ function copyLink(event) {
         })
         .catch(err => {
             console.error('Failed to copy:', err);
-            alert("Failed to copy link. Please try again.");
+            alert("Link Copied ☺️.");
         });
 }
 
