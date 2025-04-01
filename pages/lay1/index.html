@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eid Mubarak Greetings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Scheherazade+New&family=Poppins:wght@400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body onload="sendVirtualHug()">
+    <div class="greeting-container">
+        <div class="slider" id="slider">
+            <!-- Slide 1: Eid Greeting -->
+            <div class="slide slide-1 active">
+                <div class="moon-container">
+                    <div class="moon"></div>
+                    <div class="crescent"></div>
+                    <div class="stars">
+                        <div class="star star-1"></div>
+                        <div class="star star-2"></div>
+                        <div class="star star-3"></div>
+                        <div class="star star-4"></div>
+                    </div>
+                </div>
+                <div class="falling-stars"></div>
+                <h1 class="greeting-text">Eid Mubarak!</h1>
+                <p class="sub-text">May your Eid be filled with joy and blessings</p>
+                <div class="mosque">
+                    <img src="icon.png" alt="celebration image" />
+                    
+                </div>
+            </div>
+
+            <!-- Slide 2: Eid Letter -->
+            <div class="slide slide-2">
+                <div class="letter-card">
+                    <div class="letter-header">
+                        <span class="letter-date">Eid 2025</span>
+                        <div class="stamp">Eid</div>
+                        <div class="wax-seal"></div>
+                    </div>
+                    <div class="letter-content">
+<p class="letter-text">
+    Dear  <span class="receiver-name">Receiver</span>,<br><br>
+    As we celebrate Eid-ul-Adha, may your life be filled with kindness,  
+    your heart with faith, and your home with joy.  
+    May Allah accept your prayers and sacrifices  
+    and bless you with endless happiness and success.<br><br>
+    Wishing you and your family a peaceful and happy Eid!<br><br>
+    With warm wishes,<br>
+    <span class="sender-name">Your Sender</span>
+</p></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Gift Section -->
+            <div class="slide slide-3">
+                <h3 class="gift-title">ঈদের চাঁদ আকাশে🌙<br>🥳সালামি দিন বিকাশে🥳</h3>
+                <div class="gift-card">
+                    <div class="bkash-box" onclick="copyNumber()">
+                        <i class="fas fa-wallet wallet-icon"></i>
+                    <span class="bkash-number">bKash: <span class="bkash-value">01234 567890</span></span>>
+                        <span class="copy-notification">Copied!</span>
+                    </div>
+                    <div class="lanterns">
+                        <div class="lantern lantern-1"></div>
+                        <div class="lantern lantern-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <div class="arrow-container">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            <span>Swipe</span>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+        <script src="data.js"></script>
+        <script src="script.js"></script>
+</body>
+</html>
