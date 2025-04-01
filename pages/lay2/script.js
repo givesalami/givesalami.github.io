@@ -2,13 +2,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const slider = document.getElementById('slider');
     const slides = document.querySelectorAll('.slide');
     const scrollIndicator = document.querySelector('.scroll-indicator');
-    
+
     let currentSlide = 0;
     const totalSlides = slides.length;
     let isAnimating = false;
     let touchStartX = 0;
-    let touchEndX = 0;
-    let hasInteracted = false;
+    let touchStartY = 0;
 
     // Initialize slider
     function initSlider() {
@@ -19,15 +18,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 slide.classList.add('next');
             }
         });
-        
-        // Create additional falling stars
         createFallingStars();
     }
 
     // Create falling stars
     function createFallingStars() {
         const container = document.querySelector('.falling-stars');
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 8; i++) {
             const star = document.createElement('div');
             star.className = 'falling-star';
             star.style.left = `${Math.random() * 100}%`;
@@ -44,7 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
         isAnimating = true;
         const direction = index > currentSlide ? 'next' : 'prev';
         
-        // Update classes for animation
         slides[currentSlide].classList.remove('active');
         slides[currentSlide].classList.add(direction === 'next' ? 'prev' : 'next');
         
@@ -53,19 +49,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         currentSlide = index;
         
-        // Hide indicator after first interaction
-        if (!hasInteracted) {
-            hasInteracted = true;
+        if (scrollIndicator.style.opacity !== '0') {
             scrollIndicator.style.opacity = '0';
             setTimeout(() => {
                 scrollIndicator.style.display = 'none';
             }, 500);
         }
         
-        // Reset animation flag after transition
         setTimeout(() => {
             isAnimating = false;
-        }, 600);
+        }, 700);
     }
 
     // Next slide
@@ -80,27 +73,30 @@ document.addEventListener('DOMContentLoaded', function() {
         goToSlide(prevIndex);
     }
 
-    // Touch events for swipe
+    // Touch events
     slider.addEventListener('touchstart', function(e) {
-        touchStartX = e.changedTouches[0].screenX;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
     }, { passive: true });
+
+    slider.addEventListener('touchmove', function(e) {
+        if (!touchStartX) return;
+        const xDiff = touchStartX - e.touches[0].clientX;
+        if (Math.abs(xDiff) > 5) e.preventDefault();
+    }, { passive: false });
 
     slider.addEventListener('touchend', function(e) {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    }, { passive: true });
-
-    function handleSwipe() {
-        if (isAnimating) return;
+        if (!touchStartX) return;
         
-        if (touchEndX < touchStartX - 50) {
-            // Swipe left - next slide
-            nextSlide();
-        } else if (touchEndX > touchStartX + 50) {
-            // Swipe right - previous slide
-            prevSlide();
+        const xDiff = touchStartX - e.changedTouches[0].clientX;
+        const yDiff = touchStartY - e.changedTouches[0].clientY;
+        
+        if (Math.abs(xDiff) > 50 && Math.abs(xDiff) > Math.abs(yDiff)) {
+            xDiff > 0 ? nextSlide() : prevSlide();
         }
-    }
+        
+        touchStartX = 0;
+    }, { passive: true });
 
     // Keyboard navigation
     document.addEventListener('keydown', function(e) {
@@ -114,3 +110,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize the slider
     initSlider();
 });
+
+
+
+// Special Eid Celebration Function
+function sendVirtualHug() {
+    const hug = `
+       (ˆ•̮ ̮•ˆ)
+      /|🌙|\\ 
+     / |  | \\ 
+    /  🕌  \\ 
+    Eid Mubarak! 💝
+    `;
+    console.log(hug);
+    
+    if (typeof confetti === 'function') {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#FFD700', '#E2136E', '#2E8B57']
+        });
+    }
+}
