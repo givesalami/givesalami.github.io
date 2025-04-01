@@ -1,20 +1,24 @@
 :root {
-    --primary-color: #2c786c;
-    --secondary-color: #004445;
-    --accent-color: #f8a41c;
+    --primary-color: #0d3777;
+    --secondary-color: #1a5f7a;
+    --accent-color: #ffd36e;
+    --eid-gold: #ffd700;
+    --eid-red: #e2136e;
+    --eid-green: #2e8b57;
     --text-light: #ffffff;
     --text-dark: #333333;
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --letter-bg: #fff9e6;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
 }
 
 body {
+    font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     height: 100vh;
     display: flex;
@@ -27,18 +31,18 @@ body {
     width: 100%;
     max-width: 400px;
     height: 85vh;
-    max-height: 660px;
+    max-height: 700px;
     position: relative;
     overflow: hidden;
     border-radius: 20px;
     box-shadow: var(--shadow);
+    perspective: 1000px;
 }
 
 .slider {
     width: 100%;
     height: 100%;
     position: relative;
-    transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
 .slide {
@@ -52,58 +56,70 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: all 0.6s ease;
-    opacity: 0;
-    transform: translateX(100%);
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.7s ease;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+}
+
+.slide:not(.active) {
+    pointer-events: none;
 }
 
 .slide.active {
     opacity: 1;
-    transform: translateX(0);
-}
-
-.slide.prev {
-    transform: translateX(-100%);
+    transform: translateX(0) scale(1);
+    z-index: 3;
 }
 
 .slide.next {
-    transform: translateX(100%);
+    opacity: 0;
+    transform: translateX(40%) scale(0.9);
+    z-index: 2;
+}
+
+.slide.prev {
+    opacity: 0;
+    transform: translateX(-40%) scale(0.9);
+    z-index: 1;
 }
 
 /* Slide 1: Eid Greeting */
 .slide-1 {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: url("bg.png");
+    background-size: cover;
+    background-repeat: no-repeat;
     color: var(--text-light);
-    z-index: 3;
 }
 
 .moon-container {
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     position: relative;
     margin-bottom: 30px;
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
 }
 
 .moon {
-    width: 150px;
-    height: 150px;
-    background-color: #f8f3d6;
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle at 30% 30%, #f8f3d6 20%, var(--eid-gold) 100%);
     border-radius: 50%;
     position: absolute;
-    top: 15px;
-    left: 15px;
-    box-shadow: 0 0 30px rgba(248, 243, 214, 0.7);
-    animation: float 4s ease-in-out infinite;
+    top: 20px;
+    left: 20px;
+    box-shadow: 0 0 40px rgba(248, 243, 214, 0.8);
+    animation: float 6s ease-in-out infinite;
 }
 
 .crescent {
-    width: 150px;
-    height: 150px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle at 70% 30%, transparent 40%, var(--secondary-color) 40%);
     border-radius: 50%;
     position: absolute;
-    top: 15px;
-    left: -10px;
+    top: 20px;
+    left: 0;
     transform: rotate(15deg);
 }
 
@@ -111,60 +127,36 @@ body {
     position: absolute;
     background-color: var(--text-light);
     border-radius: 50%;
-    animation: twinkle 2s infinite alternate;
+    filter: drop-shadow(0 0 5px var(--eid-gold));
+    animation: twinkle 3s infinite alternate;
 }
 
-.star-1 {
-    width: 4px;
-    height: 4px;
-    top: 20px;
-    left: 40px;
-    animation-delay: 0.3s;
-}
-
-.star-2 {
-    width: 3px;
-    height: 3px;
-    top: 50px;
-    right: 30px;
-    animation-delay: 0.6s;
-}
-
-.star-3 {
-    width: 5px;
-    height: 5px;
-    bottom: 30px;
-    left: 50px;
-    animation-delay: 0.9s;
-}
-
-.star-4 {
-    width: 3px;
-    height: 3px;
-    bottom: 50px;
-    right: 40px;
-    animation-delay: 1.2s;
-}
+.star-1 { width: 5px; height: 5px; top: 30px; left: 50px; animation-delay: 0.3s; }
+.star-2 { width: 4px; height: 4px; top: 70px; right: 40px; animation-delay: 0.6s; }
+.star-3 { width: 6px; height: 6px; bottom: 40px; left: 60px; animation-delay: 0.9s; }
+.star-4 { width: 4px; height: 4px; bottom: 60px; right: 50px; animation-delay: 1.2s; }
 
 .greeting-text {
-    font-size: 2.8rem;
+    font-family: 'Amiri', serif;
+    font-size: 3rem;
     margin-bottom: 10px;
     text-align: center;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     animation: fadeInUp 1s ease;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .sub-text {
     font-size: 1.2rem;
     opacity: 0.9;
+    margin-bottom: 20px;
     animation: fadeInUp 1.2s ease;
 }
 
 .mosque img{
-    height: 300px;
-    width: 300px;
-    margin-top: 80px;
+    height: 200px;
+    width: 200px;
 }
+
 
 /* Falling Stars */
 .falling-stars {
@@ -177,44 +169,34 @@ body {
     pointer-events: none;
 }
 
-.falling-stars::before, 
-.falling-stars::after {
-    content: '';
+.falling-star {
     position: absolute;
-    top: -50px;
     width: 2px;
     height: 2px;
     background: white;
     border-radius: 50%;
-    animation: fallingStar 5s linear infinite;
-}
-
-.falling-stars::before {
-    left: 25%;
-    animation-delay: 1s;
-}
-
-.falling-stars::after {
-    left: 75%;
-    animation-delay: 3s;
+    filter: drop-shadow(0 0 3px var(--eid-gold));
+    animation: fallingStar linear infinite;
 }
 
 /* Slide 2: Eid Letter */
 .slide-2 {
     background: linear-gradient(135deg, #fff9e6, #fff0c2);
-    z-index: 2;
 }
 
 .letter-card {
     width: 100%;
     height: 90%;
-    background: white;
+    background: 
+        linear-gradient(to bottom, var(--letter-bg) 0%, #fff 100%),
+        url('https://www.transparenttextures.com/patterns/rice-paper.png');
     border-radius: 15px;
     padding: 25px;
     box-shadow: var(--shadow);
     position: relative;
     overflow: hidden;
     animation: fadeInUp 0.8s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .letter-header {
@@ -227,6 +209,7 @@ body {
 .letter-date {
     color: var(--text-dark);
     font-size: 0.9rem;
+    opacity: 0.7;
 }
 
 .stamp {
@@ -245,6 +228,20 @@ body {
     transform: rotate(15deg);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     font-size: 1.2rem;
+    font-family: 'Amiri', serif;
+}
+
+.wax-seal {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, #c00 60%, #900 100%);
+    border-radius: 50%;
+    right: 25px;
+    top: -10px;
+    transform: rotate(15deg);
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
 }
 
 .letter-content {
@@ -254,24 +251,33 @@ body {
 }
 
 .letter-text {
-    font-size: 1rem;
+    font-family: 'Scheherazade New', serif;
+    font-size: 1.1rem;
     line-height: 1.8;
     color: var(--text-dark);
     text-align: left;
+}
+
+.signature {
+    display: inline-block;
+    margin-top: 20px;
+    font-style: italic;
+    font-family: 'Dancing Script', cursive;
 }
 
 /* Slide 3: Gift Section */
 .slide-3 {
     background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
     color: var(--text-light);
-    z-index: 1;
 }
 
 .gift-title {
+    font-family: 'Amiri', serif;
     font-size: 1.8rem;
     margin-bottom: 30px;
     text-align: center;
     animation: fadeInUp 0.8s ease;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .gift-card {
@@ -283,7 +289,7 @@ body {
 }
 
 .bkash-box {
-    background: white;
+    background: linear-gradient(135deg, #fff, #f5f5f5);
     padding: 15px 25px;
     border-radius: 10px;
     display: flex;
@@ -296,6 +302,7 @@ body {
     font-weight: 600;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     margin-bottom: 40px;
+    border: 1px solid var(--accent-color);
 }
 
 .bkash-box:hover {
@@ -304,7 +311,7 @@ body {
 }
 
 .wallet-icon {
-    color: #e2136e;
+    color: var(--eid-red);
     font-size: 1.5rem;
 }
 
@@ -316,8 +323,11 @@ body {
     font-size: 0.8rem;
     color: white;
     opacity: 0;
-    transition: opacity 0.3s;
+    transition: all 0.3s;
     white-space: nowrap;
+    background: var(--accent-color);
+    padding: 3px 10px;
+    border-radius: 20px;
 }
 
 .lanterns {
@@ -329,43 +339,39 @@ body {
 }
 
 .lantern {
-    width: 40px;
-    height: 60px;
-    background-color: var(--accent-color);
+    width: 50px;
+    height: 70px;
+    background: linear-gradient(to bottom, var(--accent-color), #ffde7d);
     border-radius: 5px;
     position: relative;
-    animation: swing 3s infinite alternate;
+    animation: swing 3s infinite alternate, lantern-glow 2s infinite;
+    box-shadow: 0 0 15px rgba(248, 164, 28, 0.6);
 }
 
 .lantern:before {
     content: '';
     position: absolute;
-    width: 10px;
-    height: 10px;
+    width: 15px;
+    height: 15px;
     background-color: #ffde7d;
     border-radius: 50%;
-    top: -5px;
-    left: 15px;
+    top: -7px;
+    left: 17px;
 }
 
 .lantern:after {
     content: '';
     position: absolute;
-    width: 30px;
-    height: 5px;
+    width: 40px;
+    height: 8px;
     background-color: rgba(0, 0, 0, 0.1);
-    bottom: -5px;
+    bottom: -8px;
     left: 5px;
     border-radius: 50%;
 }
 
-.lantern-1 {
-    animation-delay: 0.3s;
-}
-
-.lantern-2 {
-    animation-delay: 0.6s;
-}
+.lantern-1 { animation-delay: 0.3s; }
+.lantern-2 { animation-delay: 0.6s; }
 
 /* Scroll Indicator */
 .scroll-indicator {
@@ -382,15 +388,26 @@ body {
     opacity: 0.8;
 }
 
-.scroll-indicator i {
-    font-size: 1.8rem;
+.arrow-container {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-bottom: 5px;
+}
+
+.scroll-indicator i {
+    font-size: 1.2rem;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .scroll-indicator span {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 /* Animations */
@@ -415,22 +432,19 @@ body {
 }
 
 @keyframes swing {
-    0% { transform: rotate(-5deg); }
-    100% { transform: rotate(5deg); }
+    0% { transform: rotate(-8deg); }
+    100% { transform: rotate(8deg); }
+}
+
+@keyframes lantern-glow {
+    0%, 100% { box-shadow: 0 0 15px rgba(248, 164, 28, 0.6); }
+    50% { box-shadow: 0 0 25px rgba(248, 164, 28, 0.9); }
 }
 
 @keyframes fallingStar {
-    0% {
-        transform: translateY(0) translateX(0);
-        opacity: 1;
-    }
-    70% {
-        opacity: 0.8;
-    }
-    100% {
-        transform: translateY(100vh) translateX(100px);
-        opacity: 0;
-    }
+    0% { transform: translate(0, -50px) scale(0.5); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: translate(100px, 100vh) scale(1.2); opacity: 0; }
 }
 
 @keyframes bounce {
@@ -448,25 +462,31 @@ body {
 /* Responsive Adjustments */
 @media (max-width: 480px) {
     .greeting-container {
-        height: 95vh;
+        height: 80vh;
         max-height: none;
         border-radius: 0;
     }
-    
-    .slide {
-        padding: 20px;
+
+    .slide {  
+        padding: 20px;  
     }
     
-    .greeting-text {
-        font-size: 2.2rem;
+    .greeting-text {  
+        font-size: 2.2rem;  
     }
     
-    .letter-card {
-        height: 85%;
-        padding: 20px;
+    .letter-card {  
+        height: 85%;  
+        padding: 20px;  
     }
     
-    .scroll-indicator {
-        bottom: 20px;
+    .scroll-indicator {  
+        bottom: 20px;  
     }
+}
+body {
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* Internet Explorer/Edge */
+    user-select: none;         /* Standard */
 }
