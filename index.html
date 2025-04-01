@@ -3,27 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eid Card Generator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
+    <title>Eid Mubarak Greeting Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
     <div class="container">
-        <img src="assets/sticker.png" alt="Eid Mubarak Sticker" class="sticker">
-        <h1>Eid Card Generator</h1>
-        <div class="form-container">
-            <form id="eidForm">
-                <input type="text" id="name" placeholder="Card receiver" required>
-                <input type="text" id="receiver" placeholder="Card Sender" required>
-                <input type="number" id="bkash" placeholder="Bkash Number of Sender" required>
-                <button type="button" onclick="generateLink()">Generate Link</button>
+        <img src="assets/icon.png" alt="Eid Mubarak Icon" class="header-icon">
+        
+        <div class="card">
+            <h1>Eid Mubarak</h1>
+            
+            <p class="section-title">Choose layout color:</p>
+            
+            <div class="color-options">
+                <div class="color-option selected" data-color="1" style="background-color: #0d3777;"></div>
+                <div class="color-option" data-color="2" style="background-color: #2c786c;"></div>
+                <div class="color-option" data-color="3" style="background-color: #7091e6;"></div>
+                <div class="color-option" data-color="4" style="background-color: #b45dbb;"></div>
+            </div>
+            
+            <form id="greetingForm">
+                <div class="form-group">
+                    <label for="receiver">Receiver's Name</label>
+                    <input type="text" id="receiver" name="receiver" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sender">Sender's Name</label>
+                    <input type="text" id="sender" name="sender" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="number">Your Bkash Number</label>
+                    <input type="tel" id="number" name="number" required>
+                </div>
+                
+                <button type="submit" class="generate-btn">
+                    <i class="fas fa-link"></i> Generate Link
+                </button>
             </form>
+            
+            <div class="divider"></div>
+            
+            <div class="link-section" id="linkSection" style="display: none;">
+                <div class="generated-link">
+                    <span id="shortLink">http://raffu1.github.io/...</span>
+                    <div class="link-actions">
+                        <button id="copyBtn" title="Copy link">
+                            <i class="far fa-copy"></i>
+                        </button>
+                        <button id="shareBtn" title="Share link">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="copied-alert" id="copiedAlert">Copied!</div>
+            </div>
         </div>
-        <div id="generatedLink" class="link-container"></div>
     </div>
-    <footer class="copyright">
-        &copy; 2025 <a href="http://facebook.com/raffsun.zany" target="_blank">Raffsun Zany</a>. All rights reserved.
-    </footer>
+
     <script src="assets/script.js"></script>
 </body>
 </html>
