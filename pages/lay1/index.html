@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eid Mubarak Greetings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="greeting-container">
+        <div class="slider" id="slider">
+            <!-- Slide 1: Eid Greeting -->
+            <div class="slide slide-1 active">
+                <div class="falling-stars"></div>
+                <div class="falling-stars"></div>
+            </div>
+
+            <!-- Slide 2: Eid Letter -->
+            <div class="slide slide-2">
+                <div class="letter-card">
+                    <div class="letter-header">
+                        <span class="letter-date">Eid 2025</span>
+                        <div class="stamp">Eid</div>
+                    </div>
+                    <div class="letter-content">
+<p class="letter-text">
+    Dear <span class="receiver-name">Receiver</span>,<br><br>
+    Eid-ul-Adha teaches us the beauty of faith, kindness, and sacrifice.  
+    May Allah accept your prayers, bless you with happiness,  
+    and fill your home with love and peace.  
+    May this special day bring joy to you and your family.<br><br>
+    Wishing you a very happy and blessed Eid!<br><br>
+    With warm wishes,<br>
+    <span class="sender-name">Your Sender</span>
+</p>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Gift Section -->
+            <div class="slide slide-3">
+                <h3 class="gift-title">ঈদের চাঁদ আকাশে🌙<br> 🥳সালামি দিন বিকাশে🥳</h3>
+                <div class="gift-card">
+                    <div class="bkash-box" onclick="copyNumber()">
+                        <i class="fas fa-wallet wallet-icon"></i>
+                    <span class="bkash-number">bKash: <span class="bkash-value">01234 567890</span></span>
+                        <span class="copy-notification">Copied!</span>
+                    </div>
+                    <div class="lanterns">
+                        <div class="lantern lantern-1"></div>
+                        <div class="lantern lantern-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Single Animated Scroll Indicator -->
+        <div class="scroll-indicator">
+            <i class="fas fa-arrow-right"></i>
+            <span>Swipe</span>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

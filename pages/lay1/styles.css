@@ -1,0 +1,492 @@
+:root {
+    --primary-color: #2c786c;
+    --secondary-color: #004445;
+    --accent-color: #f8a41c;
+    --text-light: #ffffff;
+    --text-dark: #333333;
+    --shadow: 0 0px 40px gray;
+}
+@import url('https://fonts.googleapis.com/css2?family=Atma:wght@300;400;500;600;700&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: rgb(83,229,206);
+background: linear-gradient(200deg, rgba(83,229,206,1) 24%, rgba(210,255,219,1) 60%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transition: 0.5s;
+}
+
+.greeting-container {
+    width: 100%;
+    max-width: 400px;
+    height: 85vh;
+    max-height: 660px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+}
+
+.slider {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.6s ease;
+    opacity: 0;
+    transform: translateX(100%);
+    box-shadow: 10px 10px 10px black;
+}
+
+.slide.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.slide.prev {
+    transform: translateX(-100%);
+}
+
+.slide.next {
+    transform: translateX(100%);
+}
+
+/* Slide 1: Eid Greeting */
+.slide-1 {
+    background: url("bg.png");
+    background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; 
+    color: var(--text-light);
+    z-index: 3;
+    
+}
+
+.moon-container {
+    width: 180px;
+    height: 180px;
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.moon {
+    width: 150px;
+    height: 150px;
+    background-color: #f8f3d6;
+    border-radius: 50%;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    box-shadow: 0 0 30px rgba(248, 243, 214, 0.7);
+    animation: float 4s ease-in-out infinite;
+}
+
+.crescent {
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    position: absolute;
+    top: 15px;
+    left: -10px;
+    transform: rotate(15deg);
+}
+
+.star {
+    position: absolute;
+    background-color: var(--text-light);
+    border-radius: 50%;
+    animation: twinkle 2s infinite alternate;
+}
+
+.star-1 {
+    width: 4px;
+    height: 4px;
+    top: 20px;
+    left: 40px;
+    animation-delay: 0.3s;
+}
+
+.star-2 {
+    width: 3px;
+    height: 3px;
+    top: 50px;
+    right: 30px;
+    animation-delay: 0.6s;
+}
+
+.star-3 {
+    width: 5px;
+    height: 5px;
+    bottom: 30px;
+    left: 50px;
+    animation-delay: 0.9s;
+}
+
+.star-4 {
+    width: 3px;
+    height: 3px;
+    bottom: 50px;
+    right: 40px;
+    animation-delay: 1.2s;
+}
+
+.greeting-text {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    text-align: center;
+    animation: fadeInUp 1s ease;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.sub-text {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    animation: fadeInUp 1.2s ease;
+}
+
+.mosque img{
+    height: 300px;
+    width: 300px;
+    margin-top: 80px;
+}
+
+/* Falling Stars */
+.falling-stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.falling-stars::before, 
+.falling-stars::after {
+    content: '';
+    position: absolute;
+    top: -50px;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: fallingStar 5s linear infinite;
+}
+
+.falling-stars::before {
+    left: 25%;
+    animation-delay: 1s;
+}
+
+.falling-stars::after {
+    left: 75%;
+    animation-delay: 3s;
+}
+
+/* Slide 2: Eid Letter */
+.slide-2 {
+    background: linear-gradient(135deg, #fff9e6, #fff0c2);
+    z-index: 2;
+}
+
+.letter-card {
+    width: 100%;
+    height: 90%;
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.8s ease;
+}
+
+.letter-header {
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.letter-date {
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.stamp {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    position: absolute;
+    right: 10px;
+    top: -30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    transform: rotate(15deg);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 1.2rem;
+}
+
+.letter-content {
+    height: calc(100% - 60px);
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.letter-text {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--text-dark);
+    text-align: left;
+}
+
+/* Slide 3: Gift Section */
+.slide-3 {
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    color: var(--text-light);
+    z-index: 1;
+}
+.slide-3 .gift-title{
+  font-family: "Atma", system-ui;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.gift-title {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    text-align: center;
+    animation: fadeInUp 0.8s ease;
+}
+
+.gift-card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeInUp 1s ease;
+}
+
+.bkash-box {
+    background: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    color: var(--text-dark);
+    font-weight: 600;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+}
+
+.bkash-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.wallet-icon {
+    color: #e2136e;
+    font-size: 1.5rem;
+}
+
+.copy-notification {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+}
+
+.lanterns {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.lantern {
+    width: 40px;
+    height: 60px;
+    background-color: var(--accent-color);
+    border-radius: 5px;
+    position: relative;
+    animation: swing 3s infinite alternate;
+}
+
+.lantern:before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #ffde7d;
+    border-radius: 50%;
+    top: -5px;
+    left: 15px;
+}
+
+.lantern:after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 5px;
+    background-color: rgba(0, 0, 0, 0.1);
+    bottom: -5px;
+    left: 5px;
+    border-radius: 50%;
+}
+
+.lantern-1 {
+    animation-delay: 0.3s;
+}
+
+.lantern-2 {
+    animation-delay: 0.6s;
+}
+
+/* Scroll Indicator */
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    z-index: 10;
+    animation: bounce 2s infinite;
+    opacity: 0.8;
+}
+
+.scroll-indicator i {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.scroll-indicator span {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.3; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes swing {
+    0% { transform: rotate(-5deg); }
+    100% { transform: rotate(5deg); }
+}
+
+@keyframes fallingStar {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 1;
+    }
+    70% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(100vh) translateX(100px);
+        opacity: 0;
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    40% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+    .greeting-container {
+        height: 80vh;
+        max-height: none;
+        border-radius: 0;
+    }
+    
+    .slide {
+        padding: 20px;
+    }
+    
+    .greeting-text {
+        font-size: 2.2rem;
+    }
+    
+    .letter-card {
+        height: 85%;
+        padding: 20px;
+    }
+    
+    .scroll-indicator {
+        bottom: 20px;
+    }
+}
+
+
+body {
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* Internet Explorer/Edge */
+    user-select: none;         /* Standard */
+}
