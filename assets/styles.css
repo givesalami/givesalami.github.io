@@ -19,7 +19,7 @@
 
 body {
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+  background: linear-gradient(135deg, #a2a8d3 0%, #38598b 100%);
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -50,7 +50,7 @@ body {
 }
 
 .card {
-  background: var(--card-bg);
+  background: #e7eaf6;
   border-radius: 18px;
   box-shadow: var(--shadow);
   padding: 30px 25px;
@@ -275,7 +275,7 @@ h1::after {
   overflow: hidden;
   text-overflow: ellipsis;
   padding-right: 15px;
-  font-size: 15px;
+  font-size: 25px;
 }
 
 .link-actions {
@@ -417,4 +417,4 @@ h1::after {
     font-size: 11px;
     bottom: -30px;
   }
-    }
+}
