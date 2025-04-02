@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eid Mubarak Greeting Generator</title>
+    <!-- Raffsun Zany's Custom Design - Do Not Copy Without Permission -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/styles.css">
+    <!-- Designed by Raffsun Zany - http://facebook.com/raffsun.zany -->
 </head>
 <body>
     <div class="container">
@@ -14,27 +17,29 @@
         <div class="card">
             <h1>Eid Mubarak</h1>
             
-            <p class="section-title">Choose layout color:</p>
+            <p class="section-title">Choose layout color: <small class="preview-hint">(long press to preview)</small></p>
             
             <div class="color-options">
                 <div class="color-option selected" data-color="1" style="background:linear-gradient(360deg, #2c786c, #004445);"></div>
                 <div class="color-option" data-color="2" style="background:linear-gradient(#0d3777, #1a5f7a);"></div>
                 <div class="color-option" data-color="3" style="background: linear-gradient(#b45dbb, #2e0f38);"></div>
-                <div class="color-option" data-color="4" style="background: rgb(255,204,41);
-background: radial-gradient(circle, rgba(255,204,41,1) 6%, rgba(221,168,0,1) 9%, rgba(255,237,181,1) 21%, rgba(209,159,0,1) 54%, rgba(255,235,181,1) 76%, rgba(255,247,247,1) 99%);"></div>
+                <div class="color-option" data-color="4" style="background: radial-gradient(circle, rgba(255,204,41,1) 6%, rgba(221,168,0,1) 9%, rgba(255,237,181,1) 21%, rgba(209,159,0,1) 54%, rgba(255,235,181,1) 76%, rgba(255,247,247,1) 99%);"></div>
             </div>
             
             <form id="greetingForm">
                 <div class="form-group">
-                    <input type="text" id="receiver" name="receiver" placeholder="Receiver's Name" required>
+                    <input type="text" id="receiver" name="receiver" required placeholder="Receiver's Name">
+                    <span class="input-focus-border"></span>
                 </div>
                 
                 <div class="form-group">
-                    <input type="text" id="sender" name="sender" placeholder="Sender's Name" required>
+                    <input type="text" id="sender" name="sender" required placeholder="Your Name">
+                    <span class="input-focus-border"></span>
                 </div>
                 
                 <div class="form-group">
-                    <input type="tel" id="number" name="number" placeholder="Bkash Number" required>
+                    <input type="tel" id="number" name="number" required placeholder="Your Bkash Number">
+                    <span class="input-focus-border"></span>
                 </div>
                 
                 <button type="submit" class="generate-btn">
@@ -57,10 +62,45 @@ background: radial-gradient(circle, rgba(255,204,41,1) 6%, rgba(221,168,0,1) 9%,
                     </div>
                 </div>
                 <div class="copied-alert" id="copiedAlert">Copied!</div>
+                
+                <div class="social-sharing">
+                    <p>Share via:</p>
+                    <div class="social-icons">
+                        <a href="#" id="whatsappShare" class="social-icon" title="Share on WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="#" id="telegramShare" class="social-icon" title="Share on Telegram">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="#" id="messengerShare" class="social-icon" title="Share on Messenger">
+                            <i class="fab fa-facebook-messenger"></i>
+                        </a>
+                        <a href="#" id="instagramShare" class="social-icon" title="Share on Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
+            
+            <footer class="copyright">
+                <p>Designed & Built by <a href="http://facebook.com/raffsun.zany" target="_blank">Raffsun Zany</a></p>
+                <!-- RZ-Custom-Eid-Generator -->
+            </footer>
         </div>
     </div>
 
+    <!-- Color Preview Popup -->
+    <div class="preview-popup" id="previewPopup">
+        <div class="popup-content">
+            <button class="close-popup" id="closePopup">&times;</button>
+            <img id="colorPreviewImage" src="" alt="Layout Preview">
+        </div>
+    </div>
+
+    <!-- Fireworks Canvas -->
+    <canvas id="fireworksCanvas"></canvas>
+
     <script src="assets/script.js"></script>
+    <!-- Raffsun Zany's Custom JavaScript - Do Not Copy -->
 </body>
 </html>
