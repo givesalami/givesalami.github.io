@@ -1,240 +1,260 @@
-// assets/script.js
 document.addEventListener('DOMContentLoaded', function() {
-    // DOM Elements
-    const colorOptions = document.querySelectorAll('.color-option');
-    const greetingForm = document.getElementById('greetingForm');
-    const linkSection = document.getElementById('linkSection');
-    const shortLink = document.getElementById('shortLink');
-    const copyBtn = document.getElementById('copyBtn');
-    const shareBtn = document.getElementById('shareBtn');
-    const copiedAlert = document.getElementById('copiedAlert');
-    const previewPopup = document.getElementById('previewPopup');
-    const closePopup = document.getElementById('closePopup');
-    const colorPreviewImage = document.getElementById('colorPreviewImage');
-    const canvas = document.getElementById('fireworksCanvas');
+    // ======================
+    // INITIAL SETUP
+    // ======================
+    const currentYear = new Date().getFullYear();
+    document.getElementById('current-year').textContent = currentYear;
     
-    // Updated preview image paths
-    const colorPreviews = {
-        1: "assets/1.png",
-        2: "assets/2.png",
-        3: "assets/3.png", 
-        4: "assets/4.png"
-    };
-    
-    let selectedColor = '1';
-    let fullLink = '';
-    let pressTimer;
-    
-    // Initialize fireworks canvas
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const ctx = canvas.getContext('2d');
-    
-    // Color selection with long-press preview
-    colorOptions.forEach(option => {
-        // Immediate selection on click/tap
-        option.addEventListener('pointerdown', function(e) {
-            startPressTimer(e);
-            selectColor(this);
-        });
+    // ======================
+    // BACKGROUND ANIMATIONS
+    // ======================
+    function createStars() {
+        const container = document.querySelector('.stars-container');
+        const starCount = 100;
         
-        option.addEventListener('pointerup', cancelPressTimer);
-        option.addEventListener('pointerleave', cancelPressTimer);
-    });
-    
-    function selectColor(element) {
-        colorOptions.forEach(opt => opt.classList.remove('selected'));
-        element.classList.add('selected');
-        selectedColor = element.getAttribute('data-color');
-    }
-    
-    function startPressTimer(e) {
-        e.preventDefault();
-        const colorOption = e.target.closest('.color-option');
-        const color = colorOption.getAttribute('data-color');
-        
-        pressTimer = setTimeout(() => {
-            showColorPreview(color);
-        }, 800); // 0.8 second press (faster response)
-    }
-    
-    function cancelPressTimer() {
-        clearTimeout(pressTimer);
-    }
-    
-    function showColorPreview(color) {
-        colorPreviewImage.src = colorPreviews[color];
-        previewPopup.classList.add('active');
-    }
-    
-    closePopup.addEventListener('click', function() {
-        previewPopup.classList.remove('active');
-    });
-    
-    // Form submission
-    greetingForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Validate inputs
-        const receiver = document.getElementById('receiver').value.trim();
-        const sender = document.getElementById('sender').value.trim();
-        const number = document.getElementById('number').value.trim();
-        
-        if (!receiver || !sender || !number) {
-            alert('Please fill all fields');
-            return;
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.opacity = Math.random();
+            star.style.width = `${Math.random() * 3}px`;
+            star.style.height = star.style.width;
+            star.style.animationDuration = `${5 + Math.random() * 10}s`;
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            container.appendChild(star);
         }
-        
-        // Generate link
-        fullLink = `https://raffu1.github.io/pages/lay${selectedColor}/?sender=${encodeURIComponent(sender)}&receiver=${encodeURIComponent(receiver)}&number=${encodeURIComponent(number)}`;
-        
-        // Update UI
-        shortLink.textContent = 'http://raffu1.github.io/...';
-        linkSection.style.display = 'block';
-        
-        // Show fireworks
-        startFireworks();
-        
-        // Scroll to link section
-        linkSection.scrollIntoView({ behavior: 'smooth' });
-    });
+    }
     
-    // Fast fireworks animation (3 quick bursts)
-    function startFireworks() {
-        const bursts = 3;
-        let count = 0;
-        
-        function launchFirework() {
-            if (count >= bursts) return;
-            
-            createFirework(
-                Math.random() * canvas.width,
-                canvas.height,
-                `hsl(${Math.random() * 60 + 20}, 100%, 50%)`
-            );
-            
-            count++;
-            if (count < bursts) {
-                setTimeout(launchFirework, 300); // 0.3s between fireworks
+    const starStyle = document.createElement('style');
+    starStyle.textContent = `
+        @keyframes fall {
+            from { transform: translateY(-100vh); }
+            to { transform: translateY(100vh); }
+        }
+    `;
+    document.head.appendChild(starStyle);
+    
+    // ======================
+    // SWIPER INITIALIZATION
+    // ======================
+    const swiper = new Swiper('.eid-swiper', {
+        direction: 'horizontal',
+        loop: false,
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        effect: 'fade',
+        fadeEffect: {
+            crossFade: true
+        },
+        speed: 800,
+        allowTouchMove: true,
+        grabCursor: true,
+        on: {
+            init: function() {
+                document.querySelector('.eid-card').classList.add('loaded');
             }
         }
+    });
+    
+    // ======================
+    // URL PARAMETERS HANDLING
+    // ======================
+    const params = new URLSearchParams(window.location.search);
+    
+    // Set recipient and sender from URL
+    const recipient = params.get('receiver') || params.get('recipient') || "Beloved";
+    const sender = params.get('sender') || "Your Host";
+    
+    document.getElementById('recipient').textContent = recipient;
+    document.getElementById('sender').textContent = sender;
+    
+    // Set message from URL or use default
+    const defaultMessage = `
+        <p>As we celebrate this blessed occasion of Eid UL Adha, may Allah accept your sacrifices, prayers, and good deeds.</p>
+        <p>Wishing you and your family a joyous Eid filled with peace, prosperity, and divine blessings.</p>
+        <p>Eid Mubarak!</p>
+    `;
+    
+    const customMessage = params.get('message') || params.get('msg');
+    document.getElementById('letter-content').innerHTML = customMessage ? customMessage.replace(/\n/g, '<br>') : defaultMessage;
         
-        launchFirework();
+    // ======================
+    // PAYMENT METHODS (BKash & Nagad)
+    // ======================
+    const paymentContainer = document.getElementById('payment-methods');
+    const bkashNumber = params.get('bkash');
+    const nagadNumber = params.get('nagad');
+    
+    // BKash Payment Method
+    if (bkashNumber) {
+        const bkashElement = document.createElement('div');
+        bkashElement.className = 'payment-method';
+        bkashElement.innerHTML = `
+            <img src="https://logos-download.com/wp-content/uploads/2022/01/BKash_Logo_icon.svg" alt="BKash" loading="lazy">
+            <div class="payment-number">${bkashNumber}</div>
+        `;
+        
+        const numberElement = bkashElement.querySelector('.payment-number');
+        
+        bkashElement.addEventListener('click', function() {
+            navigator.clipboard.writeText(bkashNumber).then(() => {
+                // Store original text
+                const originalText = numberElement.textContent;
+                // Change to "Copied!"
+                numberElement.textContent = 'Copied!';
+                // Add visual feedback
+                this.classList.add('copied');
+                
+                // Revert after 2 seconds
+                setTimeout(() => {
+                    numberElement.textContent = originalText;
+                    this.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                numberElement.textContent = 'Copy Failed!';
+                setTimeout(() => {
+                    numberElement.textContent = bkashNumber;
+                }, 2000);
+            });
+        });
+        
+        paymentContainer.appendChild(bkashElement);
     }
     
-    function createFirework(x, y, color) {
-        const particles = [];
-        const particleCount = 50;
+    // Nagad Payment Method
+    if (nagadNumber) {
+        const nagadElement = document.createElement('div');
+        nagadElement.className = 'payment-method';
+        nagadElement.innerHTML = `
+            <img src="https://logos-download.com/wp-content/uploads/2022/01/Nagad_Logo_full.svg" alt="Nagad" loading="lazy">
+            <div class="payment-number">${nagadNumber}</div>
+        `;
         
-        // Create particles
-        for (let i = 0; i < particleCount; i++) {
+        const numberElement = nagadElement.querySelector('.payment-number');
+        
+        nagadElement.addEventListener('click', function() {
+            navigator.clipboard.writeText(nagadNumber).then(() => {
+                // Store original text
+                const originalText = numberElement.textContent;
+                // Change to "Copied!"
+                numberElement.textContent = 'Copied!';
+                // Add visual feedback
+                this.classList.add('copied');
+                
+                // Revert after 2 seconds
+                setTimeout(() => {
+                    numberElement.textContent = originalText;
+                    this.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                numberElement.textContent = 'Copy Failed!';
+                setTimeout(() => {
+                    numberElement.textContent = nagadNumber;
+                }, 2000);
+            });
+        });
+        
+        paymentContainer.appendChild(nagadElement);
+    }
+        
+    // ======================
+    // CONFETTI EFFECT
+    // ======================
+    function createConfetti() {
+        const canvas = document.getElementById('eid-confetti');
+        if (!canvas) return;
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const ctx = canvas.getContext('2d');
+        const particles = [];
+        const colors = ['#70B859', '#826656', '#967866', '#E8BFA5', '#D9E8CF', '#FEFEFE'];
+        
+        for (let i = 0; i < 150; i++) {
             particles.push({
-                x: x,
-                y: y,
-                color: color,
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                size: Math.random() * 8 + 3,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                speed: Math.random() * 3 + 2,
                 angle: Math.random() * Math.PI * 2,
-                speed: Math.random() * 5 + 2,
-                friction: 0.95,
-                gravity: 0.2,
-                life: 100,
-                decay: Math.random() * 0.03 + 0.02,
-                size: Math.random() * 2 + 1
+                rotationSpeed: Math.random() * 0.2 - 0.1
             });
         }
         
-        // Animate
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            let alive = false;
             
-            for (let i = 0; i < particles.length; i++) {
-                const p = particles[i];
+            particles.forEach(particle => {
+                ctx.save();
+                ctx.fillStyle = particle.color;
+                ctx.translate(particle.x + particle.size / 2, particle.y + particle.size / 2);
+                ctx.rotate(particle.angle);
+                ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
+                ctx.restore();
                 
-                if (p.life <= 0) continue;
+                particle.y += particle.speed;
+                particle.angle += particle.rotationSpeed;
                 
-                p.speed *= p.friction;
-                p.x += Math.cos(p.angle) * p.speed;
-                p.y += Math.sin(p.angle) * p.speed + p.gravity;
-                p.life -= p.decay;
-                
-                ctx.globalAlpha = p.life / 100;
-                ctx.fillStyle = p.color;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
-                
-                if (p.life > 0) alive = true;
-            }
+                if (particle.y > canvas.height) {
+                    particle.y = -particle.size;
+                    particle.x = Math.random() * canvas.width;
+                }
+            });
             
-            if (alive) {
-                requestAnimationFrame(animate);
-            }
+            requestAnimationFrame(animate);
         }
         
         animate();
+        
+        setTimeout(() => {
+            canvas.style.opacity = '0';
+            setTimeout(() => {
+                canvas.remove();
+            }, 1000);
+        }, 5000);
     }
     
-    // Copy link
-    copyBtn.addEventListener('click', function() {
-        if (!fullLink) return;
-        
-        navigator.clipboard.writeText(fullLink).then(() => {
-            copiedAlert.classList.add('show');
-            setTimeout(() => copiedAlert.classList.remove('show'), 2000);
-        });
-    });
+    // ======================
+    // INITIALIZE EVERYTHING
+    // ======================
+    createStars();
     
-    // Share link
-    shareBtn.addEventListener('click', function() {
-        if (!fullLink) return;
-        
-        if (navigator.share) {
-            navigator.share({
-                title: 'Eid Mubarak Greeting',
-                text: 'Check out this Eid greeting!',
-                url: fullLink
-            }).catch(() => fallbackShare());
-        } else {
-            fallbackShare();
+    // Show confetti when reaching the last slide
+    swiper.on('slideChange', function() {
+        if (swiper.activeIndex === swiper.slides.length - 1) {
+            createConfetti();
         }
     });
     
-    function fallbackShare() {
-        const input = document.createElement('input');
-        input.value = fullLink;
-        document.body.appendChild(input);
-        input.select();
-        document.execCommand('copy');
-        document.body.removeChild(input);
-        alert('Link copied to clipboard!');
-    }
-    
-    // Social sharing
-    const setupSocialShare = (id, url) => {
-        document.getElementById(id).addEventListener('click', (e) => {
-            e.preventDefault();
-            if (!fullLink) return;
-            window.open(url.replace('{url}', encodeURIComponent(fullLink)), '_blank');
-        });
-    };
-    
-    setupSocialShare('whatsappShare', 'https://wa.me/?text=Eid%20Greeting:%20{url}');
-    setupSocialShare('telegramShare', 'https://t.me/share/url?url={url}&text=Eid%20Greeting');
-    setupSocialShare('messengerShare', 'fb-messenger://share/?link={url}');
-    setupSocialShare('instagramShare', 'instagram://share?url={url}');
-    
-    // Prevent copying
-    document.addEventListener('contextmenu', (e) => e.preventDefault());
-    document.addEventListener('copy', (e) => {
-        if (!e.target.matches('input, textarea')) e.preventDefault();
-    });
-    document.addEventListener('dragstart', (e) => e.preventDefault());
-    
-    // Responsive handling
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
+    // Initial confetti on load
+    setTimeout(createConfetti, 1000);
 });
 
-/* Custom Eid Greeting Generator by Raffsun Zany */
+// Disable right-click menu
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+// Disable keyboard shortcuts (Ctrl+C, Ctrl+A, etc.)
+document.addEventListener('keydown', function(e) {
+    // Disable Ctrl+C, Ctrl+A, Ctrl+X, etc.
+    if (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 65 || e.keyCode === 88 || e.keyCode === 85)) {
+        e.preventDefault();
+    }
+    // Disable F12 (Developer Tools)
+    if (e.keyCode === 123) {
+        e.preventDefault();
+    }
+});
+
+// Prevent image dragging via JavaScript
+document.querySelectorAll('img').forEach(img => {
+    img.setAttribute('draggable', 'false');
+});
