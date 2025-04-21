@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eid Mubarak Card Generator | Share Festive Greetings</title>
+    <meta name="description" content="Create beautiful personalized Eid cards to share with your loved ones">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-moon"></i>
+                <h1 class="title">Eid Greetings</h1>
+            </div>
+            <p class="subtitle">Create & share beautiful personalized Eid cards</p>
+        </header>
+
+        <main class="main-content">
+            <div class="progress-steps">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Details</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Design</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Share</div>
+                </div>
+            </div>
+
+            <form id="eidForm" class="card-form">
+                <div class="form-step active" data-step="1">
+                    <div class="form-group">
+                        <label for="sender">Your Name</label>
+                        <input type="text" id="sender" name="sender" placeholder="Enter your name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="receiver">Recipient's Name</label>
+                        <input type="text" id="receiver" name="receiver" placeholder="Who is this card for?" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Your Message <span id="charCount">0/500</span></label>
+                        <textarea id="message" name="message" maxlength="500" 
+                                  placeholder="Write a heartfelt Eid message..." required></textarea>
+                    </div>
+
+                    <div class="form-navigation">
+                        <button type="button" class="next-btn">Next <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-step" data-step="2">
+                    <div class="form-group">
+                        <label>Payment Method (Optional)</label>
+                        <div class="payment-group">
+                            <div class="form-group">
+                                <label for="bkash">bKash Number</label>
+                                <input type="text" id="bkash" name="bkash" placeholder="01XXXXXXXXX">
+                            </div>
+                            <div class="form-group">
+                                <label for="nagad">Nagad Number</label>
+                                <input type="text" id="nagad" name="nagad" placeholder="01XXXXXXXXX">
+                            </div>
+                        </div>
+                        <p class="payment-note">You can provide one or both numbers</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Card Design</label>
+                        <div class="layout-options">
+                            <div class="layout-option">
+                                <input type="radio" id="classic" name="layout" value="classic" checked>
+                                <label for="classic">
+                                    <div class="layout-preview classic">
+                                        <div class="preview-content">
+                                            <div class="preview-title">Eid Mubarak</div>
+                                            <div class="preview-moon"></div>
+                                        </div>
+                                    </div>
+                                    <span>Classic</span>
+                                </label>
+                            </div>
+                            <div class="layout-option">
+                                <input type="radio" id="modern" name="layout" value="modern">
+                                <label for="modern">
+                                    <div class="layout-preview modern">
+                                        <div class="preview-content">
+                                            <div class="preview-title">Eid Mubarak</div>
+                                            <div class="preview-lanterns">
+                                                <div class="lantern"></div>
+                                                <div class="lantern"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span>Modern</span>
+                                </label>
+                            </div>
+                            <div class="layout-option">
+                                <input type="radio" id="islamic" name="layout" value="islamic">
+                                <label for="islamic">
+                                    <div class="layout-preview islamic">
+                                        <div class="preview-content">
+                                            <div class="preview-mosque"></div>
+                                            <div class="preview-title">Eid Mubarak</div>
+                                        </div>
+                                    </div>
+                                    <span>Islamic</span>
+                                </label>
+                            </div>
+                            <div class="layout-option">
+                                <input type="radio" id="fun" name="layout" value="fun">
+                                <label for="fun">
+                                    <div class="layout-preview fun">
+                                        <div class="preview-content">
+                                            <div class="preview-title">Eid Mubarak</div>
+                                            <div class="preview-confetti"></div>
+                                        </div>
+                                    </div>
+                                    <span>Fun</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-navigation">
+                        <button type="button" class="prev-btn"><i class="fas fa-arrow-left"></i> Previous</button>
+                        <button type="submit" class="generate-btn">Generate Card <i class="fas fa-magic"></i></button>
+                    </div>
+                </div>
+            </form>
+
+            <div id="resultContainer" class="result-container hidden">
+                <div class="success-animation">
+                    <div class="checkmark">✓</div>
+                </div>
+                <h2>Your Eid card is ready to share!</h2>
+                <p class="success-message">Spread the joy of Eid with your loved ones</p>
+                
+                <div class="link-container">
+                    <input type="text" id="shortLink" readonly value="Generating your card...">
+                    <button id="copyBtn" class="copy-btn">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                
+                <div class="action-buttons">
+                    <a id="previewLink" href="#" target="_blank" class="preview-btn">
+                        <i class="fas fa-eye"></i> Preview Card
+                    </a>
+                    <div class="share-buttons">
+                        <button class="share-btn whatsapp">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </button>
+                        <button class="share-btn telegram">
+                            <i class="fab fa-telegram"></i> Telegram
+                        </button>
+                        <button class="share-btn native-share">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                    </div>
+                </div>
+                
+                <button id="createAnother" class="create-another-btn">
+                    <i class="fas fa-plus"></i> Create Another Card
+                </button>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>© 2025 Eid Greetings | Made by Aladin</p>
+        </footer>
+    </div>
+
+    <div class="floating-elements">
+        <div class="moon"></div>
+        <div class="stars"></div>
+        <div class="lanterns"></div>
+    </div>
+
+    <audio id="eidAudio" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
