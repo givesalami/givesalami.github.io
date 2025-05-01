@@ -1,0 +1,43 @@
+/* Color Variables */
+:root {
+    --moonlight-lilac: #DCCEF9;
+    --eid-gold: #F6C90E;
+    --mint-mist: #D8F3DC;
+    --blush-rose: #FAD2E1;
+    --deep-plum: #6247AA;
+    --sky-dream-blue: #A3D8F4;
+    --pure-white: #FFFFFF;
+  }
+  
+  /* Glassmorphism Effect */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+  
+  /* Button Gradients */
+  .btn-gradient {
+    background: linear-gradient(135deg, var(--blush-rose), var(--mint-mist));
+    color: var(--deep-plum);
+    transition: all 0.3s ease;
+  }
+  
+  .btn-gradient:hover {
+    background: linear-gradient(135deg, var(--eid-gold), var(--blush-rose));
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Text Shadows */
+  .text-glow {
+    text-shadow: 0 0 10px rgba(246, 201, 14, 0.5);
+  }
+  
+  /* Section Transitions */
+  .section-transition {
+    transition: all 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+  }
