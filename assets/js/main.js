@@ -1,500 +1,490 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Hide loading animation after 2 seconds
-    setTimeout(() => {
-      document.getElementById('loading').classList.add('hidden');
-    }, 2000);
-  
-    // DOM Elements
-    const detailsForm = document.getElementById('detailsForm');
-    const nextToDesignBtn = document.getElementById('nextToDesign');
-    const backToDetailsBtn = document.getElementById('backToDetails');
-    const generateCardBtn = document.getElementById('generateCard');
-    const createAnotherBtn = document.getElementById('createAnotherBtn');
-    const messageTextarea = document.getElementById('message');
-    const charCount = document.getElementById('charCount');
-    const generatedLink = document.getElementById('generatedLink');
-    const copyLinkBtn = document.getElementById('copyLinkBtn');
-    const copyFeedback = document.querySelector('.copy-feedback');
-    const nativeShareBtn = document.getElementById('nativeShareBtn');
-    const cardPreview = document.getElementById('cardPreview');
-    const confettiCanvas = document.getElementById('confetti-canvas');
+  // ======================
+  // 1. MAGICAL LOADING ANIMATION
+  // ======================
+  setTimeout(() => {
+    document.getElementById('loading').classList.add('hidden');
+    document.querySelector('.main-content').classList.add('loaded');
+  }, 2000);
+
+  // ======================
+  // 2. ELEGANT ELEMENTS SELECTION
+  // ======================
+  const elements = {
+    // Forms
+    detailsForm: document.getElementById('detailsForm'),
+    designForm: document.querySelector('#section2 .design-container'),
     
-    // Card data
-    let cardData = {
-      sender: '',
-      recipient: '',
-      message: '',
-      style: 'random',
-      bkash: '',
-      nagad: ''
-    };
-  
-    // Initialize app
-    init();
-  
-    function init() {
-      setupEventListeners();
+    // Buttons
+    nextBtn: document.getElementById('nextToDesign'),
+    prevBtn: document.getElementById('backToDetails'),
+    generateBtn: document.getElementById('generateCard'),
+    createNewBtn: document.getElementById('createAnotherBtn'),
+    copyBtn: document.getElementById('copyLinkBtn'),
+    
+    // Inputs
+    senderInput: document.getElementById('senderName'),
+    recipientInput: document.getElementById('recipientName'),
+    messageInput: document.getElementById('message'),
+    bkashInput: document.getElementById('bkashNumber'),
+    nagadInput: document.getElementById('nagadNumber'),
+    
+    // Displays
+    charCount: document.getElementById('charCount'),
+    generatedLink: document.getElementById('generatedLink'),
+    copyFeedback: document.querySelector('.copy-feedback'),
+    cardPreview: document.getElementById('cardPreview'),
+    
+    // Special Effects
+    confettiCanvas: document.getElementById('confetti-canvas'),
+    emojiBackground: document.querySelector('.emoji-background')
+  };
+
+  // ======================
+  // 3. CARD DATA STORE
+  // ======================
+  const cardData = {
+    sender: '',
+    recipient: '',
+    message: '',
+    style: 'random',
+    bkash: '',
+    nagad: '',
+    
+    // Save data from form
+    saveFormData() {
+      this.sender = elements.senderInput.value.trim();
+      this.recipient = elements.recipientInput.value.trim();
+      this.message = elements.messageInput.value;
+    },
+    
+    // Save payment info
+    savePaymentInfo() {
+      this.bkash = elements.bkashInput.value.trim();
+      this.nagad = elements.nagadInput.value.trim();
+    },
+    
+    // Reset all data
+    reset() {
+      this.sender = '';
+      this.recipient = '';
+      this.message = '';
+      this.style = 'random';
+      this.bkash = '';
+      this.nagad = '';
     }
-  
-    function setupEventListeners() {
-      // Character counter for message
-      messageTextarea.addEventListener('input', updateCharCount);
-      
-      // Navigation buttons
-      nextToDesignBtn.addEventListener('click', goToDesign);
-      backToDetailsBtn.addEventListener('click', goBackToDetails);
-      generateCardBtn.addEventListener('click', generateCard);
-      createAnotherBtn.addEventListener('click', resetForm);
-      
-      // Card style selection
-      document.querySelectorAll('.style-option').forEach(option => {
-        option.addEventListener('click', selectCardStyle);
+  };
+
+  // ======================
+  // 4. INITIALIZATION
+  // ======================
+  function init() {
+    setupEventListeners();
+    createFloatingEmojis();
+  }
+
+  // ======================
+  // 5. EVENT HANDLERS
+  // ======================
+  function setupEventListeners() {
+    // Real-time character counter
+    elements.messageInput.addEventListener('input', function() {
+      elements.charCount.textContent = this.value.length;
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
+
+    // Navigation flow
+    elements.nextBtn.addEventListener('click', navigateToDesign);
+    elements.prevBtn.addEventListener('click', navigateBackToDetails);
+    elements.generateBtn.addEventListener('click', generateEidCard);
+    elements.createNewBtn.addEventListener('click', resetApplication);
+
+    // Style selection with cool flip animation
+    document.querySelectorAll('.style-option').forEach(option => {
+      option.addEventListener('click', function() {
+        document.querySelectorAll('.style-option').forEach(opt => {
+          opt.classList.remove('selected', 'card-flip');
+        });
+        this.classList.add('selected', 'card-flip');
+        cardData.style = this.dataset.style;
+        
+        // Remove flip class after animation
+        setTimeout(() => this.classList.remove('card-flip'), 1000);
       });
-      
-      // Share functionality
-      copyLinkBtn.addEventListener('click', copyLinkToClipboard);
-      document.querySelectorAll('.share-btn[data-platform]').forEach(btn => {
-        btn.addEventListener('click', shareOnPlatform);
-      });
-      
-      // Native share API
-      if (navigator.share) {
-        nativeShareBtn.addEventListener('click', nativeShare);
-      } else {
-        nativeShareBtn.style.display = 'none';
-      }
+    });
+
+    // Share functionality
+    elements.copyBtn.addEventListener('click', copyGeneratedLink);
+    document.querySelectorAll('.share-btn[data-platform]').forEach(btn => {
+      btn.addEventListener('click', shareOnSocialPlatform);
+    });
+
+    // Native share API with fallback
+    if (navigator.share) {
+      document.getElementById('nativeShareBtn').addEventListener('click', nativeShare);
+    } else {
+      document.getElementById('nativeShareBtn').style.display = 'none';
     }
-  
-    function updateCharCount() {
-      charCount.textContent = this.value.length;
+  }
+
+  // ======================
+  // 6. CORE FUNCTIONALITY
+  // ======================
+  function navigateToDesign() {
+    if (validateDetailsForm()) {
+      cardData.saveFormData();
+      transitionToSection('section2');
+      updateProgress(66, 'Step 2 of 3');
     }
-  
-    function goToDesign() {
-      if (validateSection1()) {
-        // Save form data
-        cardData.sender = document.getElementById('senderName').value.trim();
-        cardData.recipient = document.getElementById('recipientName').value.trim();
-        cardData.message = document.getElementById('message').value;
-        
-        transitionToSection('section2');
-        updateProgress(66, 'Step 2 of 3');
-      }
+  }
+
+  function generateEidCard() {
+    if (validateDesignForm()) {
+      cardData.savePaymentInfo();
+      transitionToSection('section3');
+      updateProgress(100, 'Step 3 of 3');
+      
+      renderCardPreview();
+      generateShareableLink();
+      launchCelebration();
     }
-  
-    function goBackToDetails() {
-      transitionToSection('section1');
-      updateProgress(33, 'Step 1 of 3');
-    }
-  
-    function generateCard() {
-      if (validateSection2()) {
-        // Save payment data if provided
-        cardData.bkash = document.getElementById('bkashNumber').value.trim();
-        cardData.nagad = document.getElementById('nagadNumber').value.trim();
-        
-        transitionToSection('section3');
-        updateProgress(100, 'Step 3 of 3');
-        
-        // Generate the card and URL
-        generateCardPreview();
-        generateShareLink();
-        
-        // Trigger celebrations
-        triggerCelebrations();
-      }
-    }
-  
-    function selectCardStyle() {
-      document.querySelectorAll('.style-option').forEach(opt => opt.classList.remove('selected'));
-      this.classList.add('selected');
-      cardData.style = this.dataset.style;
-      this.classList.add('card-flip');
-      setTimeout(() => {
-        this.classList.remove('card-flip');
-      }, 1000);
-    }
-  
-    function generateCardPreview() {
-      // Clear previous content
-      cardPreview.className = 'card-preview';
-      cardPreview.innerHTML = '';
-      
-      // Apply selected style
-      if (cardData.style !== 'random') {
-        cardPreview.classList.add(cardData.style);
-      } else {
-        // For random style, pick one from available options
-        const styles = ['classic', 'modern', 'islamic', 'fun', 'elegant'];
-        const randomStyle = styles[Math.floor(Math.random() * styles.length)];
-        cardPreview.classList.add(randomStyle);
-        cardData.style = randomStyle; // Update the selected style
-      }
-      
-      // Create card content container
-      const cardContent = document.createElement('div');
-      cardContent.className = 'card-content';
-      
-      // Add header with Eid Mubarak
-      const header = document.createElement('div');
-      header.className = 'card-header';
-      header.innerHTML = '<h3>Eid Mubarak!</h3>';
-      cardContent.appendChild(header);
-      
-      // Add recipient
-      const recipient = document.createElement('div');
-      recipient.className = 'card-recipient';
-      recipient.innerHTML = `<p>Dear <strong>${escapeHtml(cardData.recipient)}</strong>,</p>`;
-      cardContent.appendChild(recipient);
-      
-      // Add message with preserved formatting
-      const message = document.createElement('div');
-      message.className = 'card-message';
-      
-      // Convert formatting for display
-      let formattedMessage = escapeHtml(cardData.message)
-        .replace(/\r?\n/g, '<br>') // Convert line breaks to <br>
-        .replace(/ {2}/g, ' &nbsp;'); // Convert double spaces to &nbsp;
-      
-      message.innerHTML = `<p>${formattedMessage}</p>`;
-      cardContent.appendChild(message);
-      
-      // Add sender
-      const sender = document.createElement('div');
-      sender.className = 'card-sender';
-      sender.innerHTML = `<p>From <strong>${escapeHtml(cardData.sender)}</strong></p>`;
-      cardContent.appendChild(sender);
-      
-      // Add payment info if provided
-      if (cardData.bkash || cardData.nagad) {
-        const paymentInfo = document.createElement('div');
-        paymentInfo.className = 'card-payment';
-        paymentInfo.innerHTML = '<h4>Eidi Gift:</h4>';
-        
-        if (cardData.bkash) {
-          paymentInfo.innerHTML += `<p>bKash: ${formatPhoneNumber(cardData.bkash)}</p>`;
-        }
-        
-        if (cardData.nagad) {
-          paymentInfo.innerHTML += `<p>Nagad: ${formatPhoneNumber(cardData.nagad)}</p>`;
-        }
-        
-        cardContent.appendChild(paymentInfo);
-      }
-      
-      // Add decorative elements
-      const decorations = document.createElement('div');
-      decorations.className = 'card-decorations';
-      decorations.innerHTML = `
+  }
+
+  // ======================
+  // 7. CARD GENERATION & PREVIEW
+  // ======================
+  function renderCardPreview() {
+    // Clear and prepare the preview container
+    elements.cardPreview.className = 'card-preview';
+    elements.cardPreview.innerHTML = '';
+    
+    // Determine the card style (random if not selected)
+    const style = cardData.style === 'random' 
+      ? ['classic', 'modern', 'islamic', 'fun', 'elegant'][Math.floor(Math.random() * 5)]
+      : cardData.style;
+    
+    // Apply the selected style
+    elements.cardPreview.classList.add(style);
+    
+    // Create the card content
+    const cardContent = document.createElement('div');
+    cardContent.className = 'card-content';
+    
+    // Build the card structure
+    cardContent.innerHTML = `
+      <div class="card-header">
+        <h3>Eid Mubarak!</h3>
+      </div>
+      <div class="card-recipient">
+        <p>Dear <strong>${escapeHtml(cardData.recipient)}</strong>,</p>
+      </div>
+      <div class="card-message">
+        <p>${formatMessageContent(cardData.message)}</p>
+      </div>
+      <div class="card-sender">
+        <p>From <strong>${escapeHtml(cardData.sender)}</strong></p>
+      </div>
+      ${cardData.bkash || cardData.nagad ? `
+      <div class="card-payment">
+        <h4>Eidi Gift:</h4>
+        ${cardData.bkash ? `<p>bKash: ${formatPhoneNumber(cardData.bkash)}</p>` : ''}
+        ${cardData.nagad ? `<p>Nagad: ${formatPhoneNumber(cardData.nagad)}</p>` : ''}
+      </div>
+      ` : ''}
+      <div class="card-decorations">
         <div class="moon">🌙</div>
         <div class="lantern">🪔</div>
-        <div class="stars">${Array(5).fill('⭐').join('')}</div>
-      `;
-      cardContent.appendChild(decorations);
+        <div class="stars">${'⭐'.repeat(5)}</div>
+      </div>
+    `;
+    
+    elements.cardPreview.appendChild(cardContent);
+  }
+
+  // ======================
+  // 8. URL GENERATION
+  // ======================
+  function generateShareableLink() {
+    const baseUrl = `${window.location.origin}/${cardData.style || 'modern'}`;
+    const params = new URLSearchParams();
+    
+    // Double encode the message to preserve all formatting
+    const doubleEncodedMessage = encodeURIComponent(encodeURIComponent(cardData.message));
+    
+    params.append('sender', encodeURIComponent(cardData.sender));
+    params.append('recipient', encodeURIComponent(cardData.recipient));
+    params.append('message', doubleEncodedMessage);
+    
+    if (cardData.bkash) params.append('bkash', cardData.bkash);
+    if (cardData.nagad) params.append('nagad', cardData.nagad);
+    
+    const shareUrl = `${baseUrl}/?${params.toString()}`;
+    elements.generatedLink.value = shareUrl;
+    
+    // Enable all share buttons
+    document.querySelectorAll('.share-btn').forEach(btn => btn.disabled = false);
+  }
+
+  // ======================
+  // 9. SPECIAL EFFECTS
+  // ======================
+  function launchCelebration() {
+    // Confetti explosion
+    renderConfetti();
+    
+    // Success animation
+    document.querySelector('.success-animation').classList.add('animate');
+    
+    // Optional: Play celebration sound
+    // new Audio('assets/audio/success.mp3').play().catch(e => console.log(e));
+  }
+
+  function renderConfetti() {
+    const canvas = elements.confettiCanvas;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    // Create colorful confetti particles
+    const particles = Array.from({ length: 150 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      size: Math.random() * 10 + 5,
+      color: ['#F6C90E', '#FAD2E1', '#D8F3DC', '#A3D8F4', '#FFFFFF'][Math.floor(Math.random() * 5)],
+      speed: Math.random() * 3 + 2,
+      rotation: Math.random() * 360,
+      rotationSpeed: Math.random() * 5
+    }));
+    
+    // Animation loop
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Add to preview container
-      cardPreview.appendChild(cardContent);
-    }
-  
-    function generateShareLink() {
-      // Create base URL
-      const baseUrl = window.location.href.split('?')[0];
-      
-      // Create URL parameters with all card data
-      const params = new URLSearchParams();
-      
-      // Preserve line breaks in message by replacing with \n before encoding
-      const formattedMessage = cardData.message.replace(/\r?\n/g, '\n');
-      
-      params.append('sender', encodeURIComponent(cardData.sender));
-      params.append('recipient', encodeURIComponent(cardData.recipient));
-      params.append('message', encodeURIComponent(formattedMessage));
-      params.append('style', cardData.style);
-      
-      if (cardData.bkash) params.append('bkash', cardData.bkash);
-      if (cardData.nagad) params.append('nagad', cardData.nagad);
-      
-      // Generate the full long URL
-      const longUrl = `${baseUrl}?${params.toString()}`;
-      
-      // Display the actual long URL
-      generatedLink.value = longUrl;
-      
-      // Enable share buttons immediately
-      document.querySelectorAll('.share-btn').forEach(btn => {
-        btn.disabled = false;
-      });
-    }
-  
-    function triggerCelebrations() {
-      // Play success sound (commented out as it requires user interaction)
-      // const audio = new Audio('assets/audio/success.mp3');
-      // audio.play().catch(e => console.log('Audio play failed:', e));
-      
-      // Trigger confetti
-      launchConfetti();
-      
-      // Show success animation
-      document.querySelector('.success-animation').classList.add('animate');
-    }
-  
-    function launchConfetti() {
-      const canvas = confettiCanvas;
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      
-      const particles = [];
-      const colors = ['#F6C90E', '#FAD2E1', '#D8F3DC', '#A3D8F4', '#FFFFFF'];
-      
-      // Create particles
-      for (let i = 0; i < 150; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height - canvas.height,
-          size: Math.random() * 10 + 5,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          speed: Math.random() * 3 + 2,
-          rotation: Math.random() * 360,
-          rotationSpeed: Math.random() * 5
-        });
-      }
-      
-      // Animation loop
-      function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(particle => {
+        ctx.save();
+        ctx.translate(particle.x, particle.y);
+        ctx.rotate(particle.rotation * Math.PI / 180);
         
-        particles.forEach(particle => {
-          ctx.save();
-          ctx.translate(particle.x, particle.y);
-          ctx.rotate(particle.rotation * Math.PI / 180);
-          
-          ctx.fillStyle = particle.color;
-          ctx.beginPath();
-          
-          // Draw different shapes randomly
-          if (Math.random() > 0.5) {
-            // Circle
-            ctx.arc(0, 0, particle.size / 2, 0, Math.PI * 2);
-          } else {
-            // Star
-            drawStar(ctx, 0, 0, particle.size / 2, particle.size, 5);
-          }
-          
-          ctx.fill();
-          ctx.restore();
-          
-          // Update position
-          particle.y += particle.speed;
-          particle.rotation += particle.rotationSpeed;
-          
-          // Reset particles that go off screen
-          if (particle.y > canvas.height) {
-            particle.y = -particle.size;
-            particle.x = Math.random() * canvas.width;
-          }
-        });
+        ctx.fillStyle = particle.color;
+        ctx.beginPath();
         
-        requestAnimationFrame(animate);
-      }
-      
-      // Start animation
-      animate();
-      
-      // Stop after 5 seconds
-      setTimeout(() => {
-        canvas.style.opacity = '0';
-        setTimeout(() => {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }, 1000);
-      }, 5000);
-    }
-  
-    function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
-      let rot = Math.PI / 2 * 3;
-      let x = cx;
-      let y = cy;
-      let step = Math.PI / spikes;
-  
-      ctx.beginPath();
-      ctx.moveTo(cx, cy - outerRadius);
-      
-      for (let i = 0; i < spikes; i++) {
-        x = cx + Math.cos(rot) * outerRadius;
-        y = cy + Math.sin(rot) * outerRadius;
-        ctx.lineTo(x, y);
-        rot += step;
-  
-        x = cx + Math.cos(rot) * innerRadius;
-        y = cy + Math.sin(rot) * innerRadius;
-        ctx.lineTo(x, y);
-        rot += step;
-      }
-      
-      ctx.lineTo(cx, cy - outerRadius);
-      ctx.closePath();
-    }
-  
-    function copyLinkToClipboard() {
-      generatedLink.select();
-      document.execCommand('copy');
-      
-      // Show feedback
-      copyFeedback.classList.add('show');
-      setTimeout(() => {
-        copyFeedback.classList.remove('show');
-      }, 2000);
-    }
-  
-    function shareOnPlatform() {
-      const platform = this.dataset.platform;
-      const url = encodeURIComponent(generatedLink.value);
-      const text = encodeURIComponent(`Eid Mubarak! ${cardData.sender} sent you a beautiful Eid card.`);
-      
-      let shareUrl = '';
-      
-      switch (platform) {
-        case 'whatsapp':
-          shareUrl = `https://wa.me/?text=${text} ${url}`;
-          break;
-        case 'facebook':
-          shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`;
-          break;
-        case 'telegram':
-          shareUrl = `https://t.me/share/url?url=${url}&text=${text}`;
-          break;
-      }
-      
-      window.open(shareUrl, '_blank', 'width=600,height=400');
-    }
-  
-    function nativeShare() {
-      navigator.share({
-        title: 'Eid Mubarak Card',
-        text: `${cardData.sender} sent you a beautiful Eid card!`,
-        url: generatedLink.value
-      }).catch(err => {
-        console.log('Error sharing:', err);
-      });
-    }
-  
-    function resetForm() {
-      // Reset form fields
-      document.getElementById('senderName').value = '';
-      document.getElementById('recipientName').value = '';
-      document.getElementById('message').value = '';
-      document.getElementById('bkashNumber').value = '';
-      document.getElementById('nagadNumber').value = '';
-      
-      // Reset card data
-      cardData = {
-        sender: '',
-        recipient: '',
-        message: '',
-        style: 'random',
-        bkash: '',
-        nagad: ''
-      };
-      
-      // Reset UI
-      document.querySelectorAll('.style-option').forEach(opt => opt.classList.remove('selected'));
-      document.querySelector('.style-option[data-style="random"]').classList.add('selected');
-      charCount.textContent = '0';
-      generatedLink.value = '';
-      confettiCanvas.style.opacity = '1';
-      
-      // Go back to first section
-      transitionToSection('section1');
-      updateProgress(33, 'Step 1 of 3');
-    }
-  
-    function validateSection1() {
-      let isValid = true;
-      const inputs = detailsForm.querySelectorAll('input[required], textarea[required]');
-      
-      inputs.forEach(input => {
-        if (!input.value.trim()) {
-          input.parentElement.classList.add('error');
-          isValid = false;
-        } else {
-          input.parentElement.classList.remove('error');
+        // Draw random shapes
+        Math.random() > 0.5 
+          ? ctx.arc(0, 0, particle.size / 2, 0, Math.PI * 2)
+          : drawStar(ctx, 0, 0, 5, particle.size / 2, particle.size / 4);
+        
+        ctx.fill();
+        ctx.restore();
+        
+        // Update particle position
+        particle.y += particle.speed;
+        particle.rotation += particle.rotationSpeed;
+        
+        // Recycle particles that fall off screen
+        if (particle.y > canvas.height) {
+          particle.y = -particle.size;
+          particle.x = Math.random() * canvas.width;
         }
       });
-  
-      if (!isValid) {
-        detailsForm.classList.add('shake');
-        setTimeout(() => {
-          detailsForm.classList.remove('shake');
-        }, 500);
+      
+      requestAnimationFrame(animate);
+    }
+    
+    // Start the show!
+    animate();
+    
+    // Clean up after 5 seconds
+    setTimeout(() => {
+      canvas.style.opacity = '0';
+      setTimeout(() => ctx.clearRect(0, 0, canvas.width, canvas.height), 1000);
+    }, 5000);
+  }
+
+  // ======================
+  // 10. HELPER FUNCTIONS
+  // ======================
+  function formatMessageContent(text) {
+    return escapeHtml(text)
+      .replace(/\r?\n/g, '<br>')
+      .replace(/ {2}/g, ' &nbsp;');
+  }
+
+  function escapeHtml(text) {
+    return text.replace(/[&<>"']/g, 
+      match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match]));
+  }
+
+  function formatPhoneNumber(number) {
+    return number.replace(/(\d{4})(\d{3})(\d{4})/, '$1-$2-$3');
+  }
+
+  function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
+    let rot = Math.PI / 2 * 3;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - outerRadius);
+    
+    for (let i = 0; i < spikes; i++) {
+      const x = cx + Math.cos(rot) * outerRadius;
+      const y = cy + Math.sin(rot) * outerRadius;
+      ctx.lineTo(x, y);
+      rot += Math.PI / spikes;
+
+      ctx.lineTo(
+        cx + Math.cos(rot) * innerRadius,
+        cy + Math.sin(rot) * innerRadius
+      );
+      rot += Math.PI / spikes;
+    }
+    
+    ctx.closePath();
+  }
+
+  function createFloatingEmojis() {
+    const emojis = ['🌙', '🕌', '🌟', '🪔', '🌠'];
+    elements.emojiBackground.innerHTML = emojis
+      .map(emoji => `<span style="
+        left: ${Math.random() * 90 + 5}%;
+        top: ${Math.random() * 90 + 5}%;
+        font-size: ${Math.random() * 2 + 1.5}rem;
+        animation-delay: ${Math.random() * 5}s;
+        animation-duration: ${Math.random() * 10 + 15}s;
+      ">${emoji}</span>`)
+      .join('');
+  }
+
+  // ======================
+  // 11. UI UTILITIES
+  // ======================
+  function transitionToSection(sectionId) {
+    document.querySelectorAll('.card-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function updateProgress(percent, label) {
+    document.querySelector('.progress-bar').style.width = `${percent}%`;
+    document.querySelector('.progress-label').textContent = label;
+  }
+
+  function copyGeneratedLink() {
+    elements.generatedLink.select();
+    document.execCommand('copy');
+    
+    elements.copyFeedback.classList.add('show');
+    setTimeout(() => elements.copyFeedback.classList.remove('show'), 2000);
+  }
+
+  function shareOnSocialPlatform() {
+    const platform = this.dataset.platform;
+    const url = encodeURIComponent(elements.generatedLink.value);
+    const text = encodeURIComponent(`Eid Mubarak! ${cardData.sender} sent you a beautiful Eid card.`);
+    
+    const shareUrls = {
+      whatsapp: `https://wa.me/?text=${text} ${url}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`,
+      telegram: `https://t.me/share/url?url=${url}&text=${text}`
+    };
+    
+    if (shareUrls[platform]) {
+      window.open(shareUrls[platform], '_blank', 'width=600,height=400');
+    }
+  }
+
+  function nativeShare() {
+    navigator.share({
+      title: 'Eid Mubarak Card',
+      text: `${cardData.sender} sent you a beautiful Eid card!`,
+      url: elements.generatedLink.value
+    }).catch(console.error);
+  }
+
+  function resetApplication() {
+    // Reset form fields
+    elements.senderInput.value = '';
+    elements.recipientInput.value = '';
+    elements.messageInput.value = '';
+    elements.bkashInput.value = '';
+    elements.nagadInput.value = '';
+    
+    // Reset card data
+    cardData.reset();
+    
+    // Reset UI
+    document.querySelectorAll('.style-option').forEach(opt => opt.classList.remove('selected'));
+    document.querySelector('.style-option[data-style="random"]').classList.add('selected');
+    elements.charCount.textContent = '0';
+    elements.generatedLink.value = '';
+    elements.confettiCanvas.style.opacity = '1';
+    
+    // Return to first section
+    transitionToSection('section1');
+    updateProgress(33, 'Step 1 of 3');
+  }
+
+  // ======================
+  // 12. VALIDATION
+  // ======================
+  function validateDetailsForm() {
+    let isValid = true;
+    const requiredFields = [
+      elements.senderInput, 
+      elements.recipientInput, 
+      elements.messageInput
+    ];
+    
+    requiredFields.forEach(field => {
+      if (!field.value.trim()) {
+        field.parentElement.classList.add('error');
+        isValid = false;
+      } else {
+        field.parentElement.classList.remove('error');
       }
-      
-      return isValid;
+    });
+    
+    if (!isValid) {
+      elements.detailsForm.classList.add('shake');
+      setTimeout(() => elements.detailsForm.classList.remove('shake'), 500);
     }
-  
-    function validateSection2() {
-      // Validate payment numbers if they're provided
-      const bkashNumber = document.getElementById('bkashNumber').value;
-      const nagadNumber = document.getElementById('nagadNumber').value;
-      
-      if (bkashNumber && !/^\d{11}$/.test(bkashNumber)) {
-        showError(document.getElementById('bkashNumber'), 'Please enter a valid 11-digit bKash number');
-        return false;
-      }
-      
-      if (nagadNumber && !/^\d{11}$/.test(nagadNumber)) {
-        showError(document.getElementById('nagadNumber'), 'Please enter a valid 11-digit Nagad number');
-        return false;
-      }
-      
-      return true;
+    
+    return isValid;
+  }
+
+  function validateDesignForm() {
+    let isValid = true;
+    
+    // Validate bKash if provided
+    if (elements.bkashInput.value && !/^\d{11}$/.test(elements.bkashInput.value)) {
+      showValidationError(elements.bkashInput, 'Please enter a valid 11-digit bKash number');
+      isValid = false;
     }
-  
-    function showError(input, message) {
-      const formGroup = input.parentElement;
-      formGroup.classList.add('error');
-      
-      // Create error message element if it doesn't exist
-      if (!formGroup.querySelector('.error-message')) {
-        const errorElement = document.createElement('div');
-        errorElement.className = 'error-message';
-        errorElement.style.color = '#ff4757';
-        errorElement.style.fontSize = '0.8rem';
-        errorElement.style.marginTop = '0.5rem';
-        formGroup.appendChild(errorElement);
-      }
-      
-      formGroup.querySelector('.error-message').textContent = message;
-      
-      // Scroll to the error
-      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    // Validate Nagad if provided
+    if (elements.nagadInput.value && !/^\d{11}$/.test(elements.nagadInput.value)) {
+      showValidationError(elements.nagadInput, 'Please enter a valid 11-digit Nagad number');
+      isValid = false;
     }
-  
-    function transitionToSection(sectionId) {
-      // Hide all sections
-      document.querySelectorAll('.card-section').forEach(section => {
-        section.classList.remove('active');
-      });
-      
-      // Show target section
-      document.getElementById(sectionId).classList.add('active');
-      
-      // Scroll to top of new section
-      document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+    
+    return isValid;
+  }
+
+  function showValidationError(input, message) {
+    const formGroup = input.parentElement;
+    formGroup.classList.add('error');
+    
+    let errorElement = formGroup.querySelector('.error-message');
+    if (!errorElement) {
+      errorElement = document.createElement('div');
+      errorElement.className = 'error-message';
+      formGroup.appendChild(errorElement);
     }
-  
-    function updateProgress(percent, label) {
-      document.querySelector('.progress-bar').style.width = `${percent}%`;
-      document.querySelector('.progress-label').textContent = label;
-    }
-  
-    // Helper function to escape HTML
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-  
-    // Helper function to format phone numbers
-    function formatPhoneNumber(number) {
-      return number.replace(/(\d{4})(\d{3})(\d{4})/, '$1-$2-$3');
-    }
-  });
+    
+    errorElement.textContent = message;
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // ======================
+  // 13. START THE MAGIC!
+  // ======================
+  init();
+});
