@@ -1,304 +1,500 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Hide loading animation after 2 seconds
+    setTimeout(() => {
+      document.getElementById('loading').classList.add('hidden');
+    }, 2000);
+  
     // DOM Elements
-    const section1 = document.getElementById('section1');
-    const section2 = document.getElementById('section2');
-    const section3 = document.getElementById('section3');
-    const nextToDesignBtn = document.getElementById('next-to-design');
-    const backToDetailsBtn = document.getElementById('back-to-details');
-    const generateCardBtn = document.getElementById('generate-card');
-    const createAnotherBtn = document.getElementById('create-another');
-    const previewCardBtn = document.getElementById('preview-card');
-    const copyLinkBtn = document.getElementById('copy-link');
-    const generatedLink = document.getElementById('generated-link');
-    const progressSteps = document.querySelectorAll('.progress-step');
-    const styleOptions = document.querySelectorAll('.style-option');
-    const toggleBkash = document.getElementById('toggle-bkash');
-    const toggleNagad = document.getElementById('toggle-nagad');
-    const bkashContainer = document.getElementById('bkash-container');
-    const nagadContainer = document.getElementById('nagad-container');
-    const whatsappBtn = document.querySelector('.share-btn.whatsapp');
-    const messengerBtn = document.querySelector('.share-btn.messenger');
-    const telegramBtn = document.querySelector('.share-btn.telegram');
-    const genericBtn = document.querySelector('.share-btn.generic');
+    const detailsForm = document.getElementById('detailsForm');
+    const nextToDesignBtn = document.getElementById('nextToDesign');
+    const backToDetailsBtn = document.getElementById('backToDetails');
+    const generateCardBtn = document.getElementById('generateCard');
+    const createAnotherBtn = document.getElementById('createAnotherBtn');
+    const messageTextarea = document.getElementById('message');
+    const charCount = document.getElementById('charCount');
+    const generatedLink = document.getElementById('generatedLink');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const copyFeedback = document.querySelector('.copy-feedback');
+    const nativeShareBtn = document.getElementById('nativeShareBtn');
+    const cardPreview = document.getElementById('cardPreview');
+    const confettiCanvas = document.getElementById('confetti-canvas');
     
-    // Form data
-    let formData = {
-        senderName: '',
-        recipientName: '',
-        message: '',
-        layout: 'modern',
-        bkashNumber: '',
-        nagadNumber: ''
+    // Card data
+    let cardData = {
+      sender: '',
+      recipient: '',
+      message: '',
+      style: 'random',
+      bkash: '',
+      nagad: ''
     };
-    
-    // Initialize
-    updateProgressBar(1);
-    initToggleStates(); // Initialize toggle states
-
-    // Event Listeners
-    nextToDesignBtn.addEventListener('click', function() {
-        if (validateSection1()) {
-            collectSection1Data();
-            showSection(2);
-            updateProgressBar(2);
+  
+    // Initialize app
+    init();
+  
+    function init() {
+      setupEventListeners();
+    }
+  
+    function setupEventListeners() {
+      // Character counter for message
+      messageTextarea.addEventListener('input', updateCharCount);
+      
+      // Navigation buttons
+      nextToDesignBtn.addEventListener('click', goToDesign);
+      backToDetailsBtn.addEventListener('click', goBackToDetails);
+      generateCardBtn.addEventListener('click', generateCard);
+      createAnotherBtn.addEventListener('click', resetForm);
+      
+      // Card style selection
+      document.querySelectorAll('.style-option').forEach(option => {
+        option.addEventListener('click', selectCardStyle);
+      });
+      
+      // Share functionality
+      copyLinkBtn.addEventListener('click', copyLinkToClipboard);
+      document.querySelectorAll('.share-btn[data-platform]').forEach(btn => {
+        btn.addEventListener('click', shareOnPlatform);
+      });
+      
+      // Native share API
+      if (navigator.share) {
+        nativeShareBtn.addEventListener('click', nativeShare);
+      } else {
+        nativeShareBtn.style.display = 'none';
+      }
+    }
+  
+    function updateCharCount() {
+      charCount.textContent = this.value.length;
+    }
+  
+    function goToDesign() {
+      if (validateSection1()) {
+        // Save form data
+        cardData.sender = document.getElementById('senderName').value.trim();
+        cardData.recipient = document.getElementById('recipientName').value.trim();
+        cardData.message = document.getElementById('message').value;
+        
+        transitionToSection('section2');
+        updateProgress(66, 'Step 2 of 3');
+      }
+    }
+  
+    function goBackToDetails() {
+      transitionToSection('section1');
+      updateProgress(33, 'Step 1 of 3');
+    }
+  
+    function generateCard() {
+      if (validateSection2()) {
+        // Save payment data if provided
+        cardData.bkash = document.getElementById('bkashNumber').value.trim();
+        cardData.nagad = document.getElementById('nagadNumber').value.trim();
+        
+        transitionToSection('section3');
+        updateProgress(100, 'Step 3 of 3');
+        
+        // Generate the card and URL
+        generateCardPreview();
+        generateShareLink();
+        
+        // Trigger celebrations
+        triggerCelebrations();
+      }
+    }
+  
+    function selectCardStyle() {
+      document.querySelectorAll('.style-option').forEach(opt => opt.classList.remove('selected'));
+      this.classList.add('selected');
+      cardData.style = this.dataset.style;
+      this.classList.add('card-flip');
+      setTimeout(() => {
+        this.classList.remove('card-flip');
+      }, 1000);
+    }
+  
+    function generateCardPreview() {
+      // Clear previous content
+      cardPreview.className = 'card-preview';
+      cardPreview.innerHTML = '';
+      
+      // Apply selected style
+      if (cardData.style !== 'random') {
+        cardPreview.classList.add(cardData.style);
+      } else {
+        // For random style, pick one from available options
+        const styles = ['classic', 'modern', 'islamic', 'fun', 'elegant'];
+        const randomStyle = styles[Math.floor(Math.random() * styles.length)];
+        cardPreview.classList.add(randomStyle);
+        cardData.style = randomStyle; // Update the selected style
+      }
+      
+      // Create card content container
+      const cardContent = document.createElement('div');
+      cardContent.className = 'card-content';
+      
+      // Add header with Eid Mubarak
+      const header = document.createElement('div');
+      header.className = 'card-header';
+      header.innerHTML = '<h3>Eid Mubarak!</h3>';
+      cardContent.appendChild(header);
+      
+      // Add recipient
+      const recipient = document.createElement('div');
+      recipient.className = 'card-recipient';
+      recipient.innerHTML = `<p>Dear <strong>${escapeHtml(cardData.recipient)}</strong>,</p>`;
+      cardContent.appendChild(recipient);
+      
+      // Add message with preserved formatting
+      const message = document.createElement('div');
+      message.className = 'card-message';
+      
+      // Convert formatting for display
+      let formattedMessage = escapeHtml(cardData.message)
+        .replace(/\r?\n/g, '<br>') // Convert line breaks to <br>
+        .replace(/ {2}/g, ' &nbsp;'); // Convert double spaces to &nbsp;
+      
+      message.innerHTML = `<p>${formattedMessage}</p>`;
+      cardContent.appendChild(message);
+      
+      // Add sender
+      const sender = document.createElement('div');
+      sender.className = 'card-sender';
+      sender.innerHTML = `<p>From <strong>${escapeHtml(cardData.sender)}</strong></p>`;
+      cardContent.appendChild(sender);
+      
+      // Add payment info if provided
+      if (cardData.bkash || cardData.nagad) {
+        const paymentInfo = document.createElement('div');
+        paymentInfo.className = 'card-payment';
+        paymentInfo.innerHTML = '<h4>Eidi Gift:</h4>';
+        
+        if (cardData.bkash) {
+          paymentInfo.innerHTML += `<p>bKash: ${formatPhoneNumber(cardData.bkash)}</p>`;
         }
-    });
-    
-    backToDetailsBtn.addEventListener('click', function() {
-        showSection(1);
-        updateProgressBar(1);
-    });
-    
-    generateCardBtn.addEventListener('click', function() {
-        collectSection2Data();
-        generateEidCard();
-    });
-    
-    createAnotherBtn.addEventListener('click', function() {
-        resetForm();
-        showSection(1);
-        updateProgressBar(1);
-    });
-    
-    copyLinkBtn.addEventListener('click', function() {
-        copyToClipboard(generatedLink.value);
-        showToast('Link copied to clipboard!');
-    });
-    
-    // Fixed toggle functionality with proper event listeners
-    toggleBkash.addEventListener('change', function() {
-        bkashContainer.classList.toggle('hidden', !this.checked);
-        if (!this.checked) {
-            document.getElementById('bkash-number').value = '';
+        
+        if (cardData.nagad) {
+          paymentInfo.innerHTML += `<p>Nagad: ${formatPhoneNumber(cardData.nagad)}</p>`;
         }
-    });
-    
-    toggleNagad.addEventListener('change', function() {
-        nagadContainer.classList.toggle('hidden', !this.checked);
-        if (!this.checked) {
-            document.getElementById('nagad-number').value = '';
-        }
-    });
-    
-    // Share buttons functionality
-    whatsappBtn.addEventListener('click', shareViaWhatsApp);
-    messengerBtn.addEventListener('click', shareViaMessenger);
-    telegramBtn.addEventListener('click', shareViaTelegram);
-    genericBtn.addEventListener('click', shareViaBrowser);
-
-    styleOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            styleOptions.forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-            formData.layout = this.dataset.style;
+        
+        cardContent.appendChild(paymentInfo);
+      }
+      
+      // Add decorative elements
+      const decorations = document.createElement('div');
+      decorations.className = 'card-decorations';
+      decorations.innerHTML = `
+        <div class="moon">🌙</div>
+        <div class="lantern">🪔</div>
+        <div class="stars">${Array(5).fill('⭐').join('')}</div>
+      `;
+      cardContent.appendChild(decorations);
+      
+      // Add to preview container
+      cardPreview.appendChild(cardContent);
+    }
+  
+    function generateShareLink() {
+      // Create base URL
+      const baseUrl = window.location.href.split('?')[0];
+      
+      // Create URL parameters with all card data
+      const params = new URLSearchParams();
+      
+      // Preserve line breaks in message by replacing with \n before encoding
+      const formattedMessage = cardData.message.replace(/\r?\n/g, '\n');
+      
+      params.append('sender', encodeURIComponent(cardData.sender));
+      params.append('recipient', encodeURIComponent(cardData.recipient));
+      params.append('message', encodeURIComponent(formattedMessage));
+      params.append('style', cardData.style);
+      
+      if (cardData.bkash) params.append('bkash', cardData.bkash);
+      if (cardData.nagad) params.append('nagad', cardData.nagad);
+      
+      // Generate the full long URL
+      const longUrl = `${baseUrl}?${params.toString()}`;
+      
+      // Display the actual long URL
+      generatedLink.value = longUrl;
+      
+      // Enable share buttons immediately
+      document.querySelectorAll('.share-btn').forEach(btn => {
+        btn.disabled = false;
+      });
+    }
+  
+    function triggerCelebrations() {
+      // Play success sound (commented out as it requires user interaction)
+      // const audio = new Audio('assets/audio/success.mp3');
+      // audio.play().catch(e => console.log('Audio play failed:', e));
+      
+      // Trigger confetti
+      launchConfetti();
+      
+      // Show success animation
+      document.querySelector('.success-animation').classList.add('animate');
+    }
+  
+    function launchConfetti() {
+      const canvas = confettiCanvas;
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      const particles = [];
+      const colors = ['#F6C90E', '#FAD2E1', '#D8F3DC', '#A3D8F4', '#FFFFFF'];
+      
+      // Create particles
+      for (let i = 0; i < 150; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          size: Math.random() * 10 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speed: Math.random() * 3 + 2,
+          rotation: Math.random() * 360,
+          rotationSpeed: Math.random() * 5
         });
-    });
-    
-    // Functions
-    function initToggleStates() {
-        // Set initial state of toggles and containers
-        bkashContainer.classList.toggle('hidden', !toggleBkash.checked);
-        nagadContainer.classList.toggle('hidden', !toggleNagad.checked);
-    }
-
-    function validateSection1() {
-        const senderName = document.getElementById('sender-name').value.trim();
-        const recipientName = document.getElementById('recipient-name').value.trim();
-        const message = document.getElementById('personal-message').value.trim();
+      }
+      
+      // Animation loop
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        if (!senderName || !recipientName || !message) {
-            showToast('Please fill in all required fields');
-            return false;
-        }
-        
-        if (message.length > 600) {
-            showToast('Message should be less than 600 characters');
-            return false;
-        }
-        
-        return true;
-    }
-    
-    function collectSection1Data() {
-        formData.senderName = document.getElementById('sender-name').value.trim();
-        formData.recipientName = document.getElementById('recipient-name').value.trim();
-        formData.message = document.getElementById('personal-message').value.trim();
-    }
-    
-    function collectSection2Data() {
-        formData.bkashNumber = document.getElementById('bkash-number').value.trim();
-        formData.nagadNumber = document.getElementById('nagad-number').value.trim();
-    }
-    
-    function showSection(sectionNumber) {
-        section1.classList.remove('active-section');
-        section2.classList.remove('active-section');
-        section3.classList.remove('active-section');
-        
-        if (sectionNumber === 1) {
-            section1.classList.add('active-section');
-        } else if (sectionNumber === 2) {
-            section2.classList.add('active-section');
-        } else if (sectionNumber === 3) {
-            section3.classList.add('active-section');
-        }
-    }
-    
-    function updateProgressBar(activeStep) {
-        progressSteps.forEach(step => {
-            if (parseInt(step.dataset.step) <= activeStep) {
-                step.classList.add('active');
-            } else {
-                step.classList.remove('active');
-            }
+        particles.forEach(particle => {
+          ctx.save();
+          ctx.translate(particle.x, particle.y);
+          ctx.rotate(particle.rotation * Math.PI / 180);
+          
+          ctx.fillStyle = particle.color;
+          ctx.beginPath();
+          
+          // Draw different shapes randomly
+          if (Math.random() > 0.5) {
+            // Circle
+            ctx.arc(0, 0, particle.size / 2, 0, Math.PI * 2);
+          } else {
+            // Star
+            drawStar(ctx, 0, 0, particle.size / 2, particle.size, 5);
+          }
+          
+          ctx.fill();
+          ctx.restore();
+          
+          // Update position
+          particle.y += particle.speed;
+          particle.rotation += particle.rotationSpeed;
+          
+          // Reset particles that go off screen
+          if (particle.y > canvas.height) {
+            particle.y = -particle.size;
+            particle.x = Math.random() * canvas.width;
+          }
         });
-    }
-    
-    function generateEidCard() {
-        // Build the long URL
-        let params = new URLSearchParams();
-        params.append('sender', encodeURIComponent(formData.senderName));
-        params.append('receiver', encodeURIComponent(formData.recipientName));
-        params.append('message', encodeURIComponent(formData.message));
         
-        if (formData.bkashNumber) {
-            params.append('bkash', formData.bkashNumber);
-        }
-        
-        if (formData.nagadNumber) {
-            params.append('nagad', formData.nagadNumber);
-        }
-        
-        const longUrl = `http://eidcard.link/${formData.layout}/?${params.toString()}`;
-        
-        generatedLink.value = longUrl;
-        previewCardBtn.href = longUrl;
-        
-        // Show celebration effects
-        showCelebration();
-        showSection(3);
-        updateProgressBar(3);
-    }
-    
-    function showCelebration() {
-        // Create confetti
-        for (let i = 0; i < 50; i++) {
-            createConfetti();
-        }
-    }
-    
-    function createConfetti() {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        
-        // Random position
-        const left = Math.random() * 100;
-        confetti.style.left = `${left}%`;
-        
-        // Random color
-        const colors = ['#F6C90E', '#FAD2E1', '#A3D8F4', '#6247AA'];
-        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.backgroundColor = randomColor;
-        
-        // Random size
-        const size = Math.random() * 10 + 5;
-        confetti.style.width = `${size}px`;
-        confetti.style.height = `${size}px`;
-        
-        // Random animation duration
-        const duration = Math.random() * 3 + 2;
-        confetti.style.animationDuration = `${duration}s`;
-        
-        document.body.appendChild(confetti);
-        
-        // Remove confetti after animation
+        requestAnimationFrame(animate);
+      }
+      
+      // Start animation
+      animate();
+      
+      // Stop after 5 seconds
+      setTimeout(() => {
+        canvas.style.opacity = '0';
         setTimeout(() => {
-            confetti.remove();
-        }, duration * 1000);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }, 1000);
+      }, 5000);
     }
-    
+  
+    function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
+      let rot = Math.PI / 2 * 3;
+      let x = cx;
+      let y = cy;
+      let step = Math.PI / spikes;
+  
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - outerRadius);
+      
+      for (let i = 0; i < spikes; i++) {
+        x = cx + Math.cos(rot) * outerRadius;
+        y = cy + Math.sin(rot) * outerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+  
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+      }
+      
+      ctx.lineTo(cx, cy - outerRadius);
+      ctx.closePath();
+    }
+  
+    function copyLinkToClipboard() {
+      generatedLink.select();
+      document.execCommand('copy');
+      
+      // Show feedback
+      copyFeedback.classList.add('show');
+      setTimeout(() => {
+        copyFeedback.classList.remove('show');
+      }, 2000);
+    }
+  
+    function shareOnPlatform() {
+      const platform = this.dataset.platform;
+      const url = encodeURIComponent(generatedLink.value);
+      const text = encodeURIComponent(`Eid Mubarak! ${cardData.sender} sent you a beautiful Eid card.`);
+      
+      let shareUrl = '';
+      
+      switch (platform) {
+        case 'whatsapp':
+          shareUrl = `https://wa.me/?text=${text} ${url}`;
+          break;
+        case 'facebook':
+          shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`;
+          break;
+        case 'telegram':
+          shareUrl = `https://t.me/share/url?url=${url}&text=${text}`;
+          break;
+      }
+      
+      window.open(shareUrl, '_blank', 'width=600,height=400');
+    }
+  
+    function nativeShare() {
+      navigator.share({
+        title: 'Eid Mubarak Card',
+        text: `${cardData.sender} sent you a beautiful Eid card!`,
+        url: generatedLink.value
+      }).catch(err => {
+        console.log('Error sharing:', err);
+      });
+    }
+  
     function resetForm() {
-        document.getElementById('details-form').reset();
-        document.getElementById('bkash-number').value = '';
-        document.getElementById('nagad-number').value = '';
-        toggleBkash.checked = false;
-        toggleNagad.checked = false;
-        bkashContainer.classList.add('hidden');
-        nagadContainer.classList.add('hidden');
-        styleOptions[0].classList.add('active');
-        formData = {
-            senderName: '',
-            recipientName: '',
-            message: '',
-            layout: 'modern',
-            bkashNumber: '',
-            nagadNumber: ''
-        };
+      // Reset form fields
+      document.getElementById('senderName').value = '';
+      document.getElementById('recipientName').value = '';
+      document.getElementById('message').value = '';
+      document.getElementById('bkashNumber').value = '';
+      document.getElementById('nagadNumber').value = '';
+      
+      // Reset card data
+      cardData = {
+        sender: '',
+        recipient: '',
+        message: '',
+        style: 'random',
+        bkash: '',
+        nagad: ''
+      };
+      
+      // Reset UI
+      document.querySelectorAll('.style-option').forEach(opt => opt.classList.remove('selected'));
+      document.querySelector('.style-option[data-style="random"]').classList.add('selected');
+      charCount.textContent = '0';
+      generatedLink.value = '';
+      confettiCanvas.style.opacity = '1';
+      
+      // Go back to first section
+      transitionToSection('section1');
+      updateProgress(33, 'Step 1 of 3');
     }
-    
-    function copyToClipboard(text) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-    }
-    
-    function showToast(message) {
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.classList.add('show');
-        }, 10);
-        
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => {
-                toast.remove();
-            }, 300);
-        }, 3000);
-    }
-    
-    // Share functions
-    function shareViaWhatsApp() {
-        const text = `Eid Mubarak! Check out this personalized Eid card for you: ${generatedLink.value}`;
-        const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-        window.open(url, '_blank');
-    }
-    
-    function shareViaMessenger() {
-        // Fallback solution since proper Messenger sharing requires app_id
-        const text = `Eid Mubarak! Check out this personalized Eid card for you: ${generatedLink.value}`;
-        const url = `https://www.facebook.com/dialog/send?link=${encodeURIComponent(generatedLink.value)}&redirect_uri=${encodeURIComponent(window.location.href)}`;
-        window.open(url, '_blank');
-    }
-    
-    function shareViaTelegram() {
-        const text = `Eid Mubarak! Check out this personalized Eid card for you: ${generatedLink.value}`;
-        const url = `https://t.me/share/url?url=${encodeURIComponent(generatedLink.value)}&text=${encodeURIComponent(text)}`;
-        window.open(url, '_blank');
-    }
-    
-    function shareViaBrowser() {
-        if (navigator.share) {
-            navigator.share({
-                title: 'Eid Mubarak Greeting',
-                text: 'Someone sent you a personalized Eid card!',
-                url: generatedLink.value
-            }).catch(err => {
-                console.log('Error using native share:', err);
-                // Fallback to copying the link
-                copyToClipboard(generatedLink.value);
-                showToast('Link copied to clipboard!');
-            });
+  
+    function validateSection1() {
+      let isValid = true;
+      const inputs = detailsForm.querySelectorAll('input[required], textarea[required]');
+      
+      inputs.forEach(input => {
+        if (!input.value.trim()) {
+          input.parentElement.classList.add('error');
+          isValid = false;
         } else {
-            // Fallback for browsers that don't support Web Share API
-            copyToClipboard(generatedLink.value);
-            showToast('Link copied to clipboard!');
+          input.parentElement.classList.remove('error');
         }
+      });
+  
+      if (!isValid) {
+        detailsForm.classList.add('shake');
+        setTimeout(() => {
+          detailsForm.classList.remove('shake');
+        }, 500);
+      }
+      
+      return isValid;
     }
-});
+  
+    function validateSection2() {
+      // Validate payment numbers if they're provided
+      const bkashNumber = document.getElementById('bkashNumber').value;
+      const nagadNumber = document.getElementById('nagadNumber').value;
+      
+      if (bkashNumber && !/^\d{11}$/.test(bkashNumber)) {
+        showError(document.getElementById('bkashNumber'), 'Please enter a valid 11-digit bKash number');
+        return false;
+      }
+      
+      if (nagadNumber && !/^\d{11}$/.test(nagadNumber)) {
+        showError(document.getElementById('nagadNumber'), 'Please enter a valid 11-digit Nagad number');
+        return false;
+      }
+      
+      return true;
+    }
+  
+    function showError(input, message) {
+      const formGroup = input.parentElement;
+      formGroup.classList.add('error');
+      
+      // Create error message element if it doesn't exist
+      if (!formGroup.querySelector('.error-message')) {
+        const errorElement = document.createElement('div');
+        errorElement.className = 'error-message';
+        errorElement.style.color = '#ff4757';
+        errorElement.style.fontSize = '0.8rem';
+        errorElement.style.marginTop = '0.5rem';
+        formGroup.appendChild(errorElement);
+      }
+      
+      formGroup.querySelector('.error-message').textContent = message;
+      
+      // Scroll to the error
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  
+    function transitionToSection(sectionId) {
+      // Hide all sections
+      document.querySelectorAll('.card-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      
+      // Show target section
+      document.getElementById(sectionId).classList.add('active');
+      
+      // Scroll to top of new section
+      document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+    }
+  
+    function updateProgress(percent, label) {
+      document.querySelector('.progress-bar').style.width = `${percent}%`;
+      document.querySelector('.progress-label').textContent = label;
+    }
+  
+    // Helper function to escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  
+    // Helper function to format phone numbers
+    function formatPhoneNumber(number) {
+      return number.replace(/(\d{4})(\d{3})(\d{4})/, '$1-$2-$3');
+    }
+  });
